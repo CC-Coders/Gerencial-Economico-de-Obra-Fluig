@@ -1,1 +1,22 @@
-/* Coloque aqui seu codigo CSS */
+:root{
+    --colorCastilho: rgb(255 205 42);
+}
+
+
+#divFiltros{
+    margin-top: 10px;
+}
+
+.table-castilho{
+    border-radius: 0.5rem !important;
+}
+.table-castilho>thead>tr>th{
+    background-color: var(--colorCastilho) !important;
+}
+
+.hrCastilho{
+    margin-top: 0px !important;
+    margin-bottom: 12px !important;
+    border-top: 0px !important;
+    border-bottom: 3px var(--colorCastilho) solid !important;
+}
