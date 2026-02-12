@@ -9,6 +9,7 @@
 
 .table-castilho{
     border-radius: 0.5rem !important;
+    overflow: hidden;
 }
 .table-castilho>thead>tr>th{
     background-color: var(--colorCastilho) !important;
