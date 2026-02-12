@@ -549,7 +549,8 @@ function abreModalCentroDeCusto(data, readonly) {
         atualizaListaEngenheiros();
         atualizaListaChefes();
         atualizaListaEstados();
-
+        atualizaListaClientes();
+    
         $("#divDadosConsorcio").hide();
         $("#checkboxConsorcio").on("change", function () {
             if ($(this).is(":checked")) {
@@ -598,6 +599,17 @@ function abreModalCentroDeCusto(data, readonly) {
     async function atualizaListaEstados() {
         var estados = await asyncConsultaEstados();
         $("#ufNovoCentroDeCusto")[0].selectize.addOption(estados.map(e => { return { value: e.ID, text: e.UF } }));
+    }
+    async function atualizaListaClientes() {
+        try {
+            var clientes = await promiseConsultaClientes();
+            $("#clienteNovoCentroDeCusto")[0].selectize.addOption(clientes.map(e => { 
+                var cliente = `${e.CGCCFO} - ${e.NOMEFANTASIA}`;
+                return { value: `${e.CODCFO} - ${cliente}`, text: cliente } }));            
+        } catch (error) {
+            throw error;
+        }
+
     }
 }
 
@@ -722,6 +734,26 @@ function promiseConsultaCCusto(CODCOLIGADA) {
         ], null, {
             success: ds => {
                 resolve(ds.values);
+            }
+        });
+    });
+}
+function promiseConsultaClientes(){
+    return new Promise((resolve, reject)=>{
+        DatasetFactory.getDataset("dsConsultaClientes", null, null, null,{
+            success:ds=>{
+                var status = ds.values[0].STATUS;
+                if (status != "SUCCESS") {
+                    showMessage("Erro ao consultar Clientes", e, "warning");
+                    log.error(e);
+                    reject(e);
+                }
+
+                resolve(JSON.parse(ds.values[0].RESULT));
+            },error:e=>{
+                showMessage("Erro ao consultar Clientes", e, "warning");
+                log.error(e);
+                reject(e);
             }
         });
     });
