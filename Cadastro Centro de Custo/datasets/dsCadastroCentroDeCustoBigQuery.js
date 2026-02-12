@@ -40,8 +40,22 @@ function createDataset(fields, constraints, sortFields) {
 
 function buscaCentrosDeCusto(constraints) {
     try {
+        var query = "SELECT * FROM etl-castilho.dev.cadastro_centros_custo WHERE 1=1 ";
 
-        var query = "SELECT * FROM etl-castilho.dev.cadastro_centros_custo";
+        var filtros = JSON.parse(constraints.FILTROS);
+        for (var i = 0; i < filtros.length; i++) {
+            var filtro = filtros[i];
+
+            if (filtro.LIKE_SEARCH == "true") {
+                query += " AND " + filtro.column + " like '" + filtro + "'";
+            }
+            else{
+                query += " AND " + filtro.column + " = '" + filtro + "'";
+            }
+            
+        }
+
+
         var retorno = executaQueryNoBigQuery(query);
 
         log.dir(retorno);
@@ -64,6 +78,7 @@ function criaCentroDeCusto(constraint){
         query += "des_cliente, ";
         query += "des_contrato, ";
         query += "per_castilho, ";
+
         query += "dt_base, ";
         query += "st_consorcio, ";
         query += "des_consorcio, ";
@@ -74,18 +89,16 @@ function criaCentroDeCusto(constraint){
         query += "dt_termino_obra, ";
         query += "des_objeto_contrato, ";
         query += "des_setor, ";
+
         query += "qt_prazo_contratual, ";
         query += "dt_termino_contratual, ";
         query += "des_lider_contrato, ";
         query += "dt_ultima_alteracao, ";
         query += "user_ultima_alteracao";        
-        query += ") VALUES ("
-        
+        query += ") VALUES (";
+        query += "?,?,?,?,?,?,?,?,?,? ?,?,?,?,?,?,?,?,?,? ?,?,?,?,?";
         query += ")";
 
-
-
-        
 
     } catch (error) {
         return catchError(error);
