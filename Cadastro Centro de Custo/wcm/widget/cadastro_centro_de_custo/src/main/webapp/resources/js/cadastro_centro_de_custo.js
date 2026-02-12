@@ -57,13 +57,21 @@ function init() {
 }
 
 // Filtros
-function initFiltros() {
+async function initFiltros() {
     $("#filtroColigada").selectize();
     $("#filtroCliente").selectize();
     $("#filtroCoordenador").selectize();
 
     FLUIGC.calendar("#filtroDataBase");
     FLUIGC.calendar("#filtroInicioObra");
+
+    
+    var coligadas = await promiseConsultaColigadas();
+    $("#filtroColigada")[0].selectize.addOption(coligadas.map(e => { return { value: e.CODCOLIGADA, text: `${e.CODCOLIGADA} - ${e.NOME}` } }));
+    
+    
+    var coordenadores = await promiseConsultaCoordenadores();
+    $("#filtroCoordenador")[0].selectize.addOption(coordenadores.map(e => { return { value: e, text: e } }));
 }
 function consultaCoordenadores() {
 
@@ -94,10 +102,37 @@ function initDatatableCentrosDeCusto() {
                     data: "des_contrato"
                 },
                 {
-                    data: "des_objeto_contrato"
+                    data: "des_centro_custo",
+                    render:function(data,type,row){
+                        return `${row.cod_obra} - ${row.des_centro_custo}`
+                    }
+                },
+                {
+                    data: "des_objeto_contrato",
+                    visible:false
                 },
                 {
                     data: "des_coordenacao"
+                },
+                {
+                    data: "des_regiao",
+                    visible:false,
+                },
+                {
+                    data: "des_setor",
+                    visible:false,
+                },
+                {
+                    data: "des_segmento",
+                    visible:false,
+                },
+                {
+                    data: "per_castilho",
+                    visible:false,
+                },
+                {
+                    data: "per_meta_resultado",
+                    visible:false,
                 },
                 {
                     data: "dt_base",
@@ -113,7 +148,7 @@ function initDatatableCentrosDeCusto() {
                 },
                 {
                     render: function (data, row) {
-                        return `<div style="display: flex;align-items: center;">
+                        return `<div style="display: flex;align-items: center; width:100%;">
                                 <button class="btn btn-default">
                                     <i class="flaticon flaticon-view icon-sm" aria-hidden="true"></i>
                                 </button>
@@ -127,13 +162,14 @@ function initDatatableCentrosDeCusto() {
 
             layout: {
                 topStart: {
-                    buttons: [{ extend: 'colvis', className: 'btn btn-primary' }]
+                    buttons: [{ extend: 'colvis', className: 'btn btn-primary' }, {extend:'excel'}]
                 }
             },
             language: datatablesLanguage
         });
 
-        $(dataTableCentrosDeCusto.buttons($('.buttons-colvis')).nodes()).attr("class", "buttons-collection buttons-colvis btn btn-primary")
+        $(dataTableCentrosDeCusto.buttons($('.buttons-colvis')).nodes()).attr("class", "buttons-collection buttons-colvis btn btn-primary");
+        $(dataTableCentrosDeCusto.buttons($('.buttons-excel')).nodes()).attr("class", "buttons-excel buttons-html5 btn btn-primary");
     } catch (error) {
         throw error;
     }
@@ -142,8 +178,8 @@ async function atualizaDatatableCentrosDeCusto() {
     try {
         var dados = await promiseConsultaCentrosDeCusto();
         dataTableCentrosDeCusto.clear().draw();
-        dataTableCentrosDeCusto.rows.add(dados); // Add new data
-        dataTableCentrosDeCusto.columns.adjust().draw(); // Redraw the DataTable
+        dataTableCentrosDeCusto.rows.add(dados);
+        dataTableCentrosDeCusto.columns.adjust().draw();
     } catch (error) {
         throw error;
     }
@@ -154,7 +190,8 @@ async function atualizaDatatableCentrosDeCusto() {
 function promiseConsultaCentrosDeCusto() {
     return new Promise((resolve, reject) => {
         DatasetFactory.getDataset("dsCadastroCentroDeCustoBigQuery", null, [
-            DatasetFactory.createConstraint("ACTION", "SELECT", "SELECT", ConstraintType.MUST)
+            DatasetFactory.createConstraint("ACTION", "SELECT", "SELECT", ConstraintType.MUST),
+            DatasetFactory.createConstraint("FILTROS", JSON.stringify(getFiltrosConsultaCentrosDeCusto()), JSON.stringify(getFiltrosConsultaCentrosDeCusto()), ConstraintType.MUST),
         ], null, {
             success: ds => {
                 var STATUS = ds.values[0].STATUS;
@@ -174,6 +211,37 @@ function promiseConsultaCentrosDeCusto() {
         })
     });
 }
+function getFiltrosConsultaCentrosDeCusto() {
+    var filtros = [];
+
+    var filtroColigada = $("#filtroColigada")[0].selectize.items[0];
+    if (filtroColigada) {
+        filtros.push({
+            column: CODCOLIGADA,
+            value: filtroColigada,
+        });
+    }
+
+
+    var filtroCoordenador = $("#filtroCoordenador")[0].selectize.items[0];
+    if (filtroCoordenador) {
+        filtros.push({
+            column: COORDENADOR,
+            value: filtroCoordenador,
+        });
+    }
+
+
+    var filtroStatus = $("#filtroStatus").val();
+    if (filtroStatus) {
+        filtros.push({
+            column: STATUS,
+            value: filtroStatus,
+        });
+    }
+
+    return filtros;
+}
 
 // Modal
 function abreModalCentroDeCusto(data, readonly) {
@@ -191,34 +259,37 @@ function abreModalCentroDeCusto(data, readonly) {
         }
     });
 
-
     function getHTML() {
         var htmlIdentificacaoContrato =
             `<div>
-            <h3>
-                <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
-                Identificação do Contrato
-            </h3>
-            <hr class="hrCastilho">
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <label>Empresa</label>
-                <select id="empresaNovoCentroDeCusto"></select>
+                <h3>
+                    <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
+                    Identificação do Contrato
+                </h3>
+                <hr class="hrCastilho">
             </div>
-            <div class="col-md-4">
-                <label>Cliente</label>
-                <select id="clienteNovoCentroDeCusto"></select>
-            </div>
-            <div class="col-md-4">
-                <label>Nº do Contrato</label>
-                <input type="text" class="form-control">
-            </div>
-            <div class="col-md-12">
-                <label>Objeto do Contrato</label>
-                <input type="text" class="form-control">
-            </div>
-        </div>`;
+            <div class="row">
+                <div class="col-md-6">
+                    <label>Empresa</label>
+                    <select id="empresaNovoCentroDeCusto"></select>
+                </div>
+                <div class="col-md-6">
+                    <label>Centro de Custo</label>
+                    <select id="ccustoNovoCentroDeCusto"></select>
+                </div>
+                <div class="col-md-6">
+                    <label>Cliente</label>
+                    <select id="clienteNovoCentroDeCusto"></select>
+                </div>
+                <div class="col-md-6">
+                    <label>Nº do Contrato</label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="col-md-12">
+                    <label>Objeto do Contrato</label>
+                    <textarea class="form-control" rows=3></textarea>                    
+                </div>
+            </div>`;
 
         var htmlClassificacaoStatus =
             `<div>
@@ -258,26 +329,30 @@ function abreModalCentroDeCusto(data, readonly) {
 
         var htmlEquipeGestao =
             `<div>
-            <h3>
-                <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
-                Equipe de Gestão
-            </h3>
-            <hr class="hrCastilho">
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <label>Coordenador/Regional</label>
-                <select id="coordenadorNovoCentroDeCusto"></select>
+                <h3>
+                    <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
+                    Equipe de Gestão
+                </h3>
+                <hr class="hrCastilho">
             </div>
-            <div class="col-md-4">
-                <label>Líder de Contrato</label>
-                <select id="liderContratoNovoCentroDeCusto"></select>
-            </div>
-            <div class="col-md-4">
-                <label>Chefe de Escritório</label>
-                <select id="chefeEscritorioNovoCentroDeCusto"></select>
-            </div>
-        </div>`
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Regional</label>
+                    <select id="regionalNovoCentroDeCusto"></select>
+                </div>
+                <div class="col-md-3">
+                    <label>Coordenador</label>
+                    <select id="coordenadorNovoCentroDeCusto"></select>
+                </div>
+                <div class="col-md-3">
+                    <label>Líder de Contrato</label>
+                    <select id="liderContratoNovoCentroDeCusto"></select>
+                </div>
+                <div class="col-md-3">
+                    <label>Chefe de Escritório</label>
+                    <select id="chefeEscritorioNovoCentroDeCusto"></select>
+                </div>
+            </div>`;
 
         var htmlIndicadoresEconomicos =
             `<div>
@@ -369,8 +444,8 @@ function abreModalCentroDeCusto(data, readonly) {
             </div>
         </div>`;
 
-        var htmlConsorcio = 
-        `<div>
+        var htmlConsorcio =
+            `<div>
             <h3>
                 <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
                 Consórcio
@@ -442,53 +517,87 @@ function abreModalCentroDeCusto(data, readonly) {
         FLUIGC.calendar("#terminoObraNovoCentroDeCusto");
 
 
-
-        $("#empresaNovoCentroDeCusto").selectize();
-        var coligadas = await promiseConsultaColigadas();
-        $("#empresaNovoCentroDeCusto")[0].selectize.addOption(coligadas.map(e=>{return {value:e.CODCOLIGADA, text:`${e.CODCOLIGADA} - ${e.NOME}`}}));
-
+        $("#empresaNovoCentroDeCusto").selectize({
+            onChange: function (value) {
+                const [CODCOLIGADA, NOME] = value.split(" - ");
+                atualizaListaCCusto(CODCOLIGADA);
+            }
+        });
+        $("#ccustoNovoCentroDeCusto").selectize();
         $("#clienteNovoCentroDeCusto").selectize();
 
+        $("#regionalNovoCentroDeCusto").selectize();
         $("#coordenadorNovoCentroDeCusto").selectize();
         $("#liderContratoNovoCentroDeCusto").selectize();
         $("#chefeEscritorioNovoCentroDeCusto").selectize();
 
-        var coordenadores = await promiseConsultaCoordenadores();
-        $("#coordenadorNovoCentroDeCusto")[0].selectize.addOption(coordenadores.map(e=>{return {value:e,text:e}}));
-
-        var engenheiros = await promiseConsultaEngenheiros();
-        $("#liderContratoNovoCentroDeCusto")[0].selectize.addOption(engenheiros.map(e=>{return {value:e,text:e}}));
-
-        var chefes = await promiseConsultaChefesDeEscritorio();
-        $("#chefeEscritorioNovoCentroDeCusto")[0].selectize.addOption(chefes.map(e=>{return {value:e,text:e}}));
-
-
-
         $("#cidadeNovoCentroDeCusto").selectize();
         $("#ufNovoCentroDeCusto").selectize({
-            onChange:async function(value){
+            onChange: async function (value) {
                 $("#cidadeNovoCentroDeCusto")[0].selectize.clearOptions();
                 var cidades = await asyncConsultaCidades(value);
-                $("#cidadeNovoCentroDeCusto")[0].selectize.addOption(cidades.map(e=>{return {value:e.cidade, text:e.cidade}}));
+                $("#cidadeNovoCentroDeCusto")[0].selectize.addOption(cidades.map(e => { return { value: e.cidade, text: e.cidade } }));
             }
         });
-        var estados = await asyncConsultaEstados();
-        $("#ufNovoCentroDeCusto")[0].selectize.addOption(estados.map(e=>{return {value:e.ID, text:e.UF}}));
 
+        $("#metaResultadoNovoCentroDeCusto").maskMoney({ suffix: "%", precision:10 });
+        $("#prazoContratualNovoCentroDeCusto").maskMoney({ suffix: " Dias", precision:0 });
+        $("#percentualCastilhoNovoCentroDeCusto").maskMoney({ suffix: " %",precision:10 });
+
+        atualizaListaEmpresas();
+        atualizaListaCoordenadores();
+        atualizaListaEngenheiros();
+        atualizaListaChefes();
+        atualizaListaEstados();
 
         $("#divDadosConsorcio").hide();
-        $("#checkboxConsorcio").on("change", function(){
+        $("#checkboxConsorcio").on("change", function () {
             if ($(this).is(":checked")) {
                 $("#divDadosConsorcio").show();
-            }else{
+            } else {
                 $("#divDadosConsorcio").hide();
             }
         });
+    }
 
+    async function atualizaListaEmpresas() {
+        var coligadas = await promiseConsultaColigadas();
+        $("#empresaNovoCentroDeCusto")[0].selectize.addOption(coligadas.map(e => { return { value: e.CODCOLIGADA, text: `${e.CODCOLIGADA} - ${e.NOME}` } }));
 
-        $("#metaResultadoNovoCentroDeCusto").maskMoney({prefix:"R$"});
-        $("#prazoContratualNovoCentroDeCusto").maskMoney({suffix:" Meses"});
-        $("#percentualCastilhoNovoCentroDeCusto").maskMoney({suffix:" %"});
+    }
+    async function atualizaListaCCusto(CODCOLIGADA) {
+        try {
+            var CCUSTO = await promiseConsultaCCusto(CODCOLIGADA);
+            const selectizeControler = $("#ccustoNovoCentroDeCusto")[0].selectize;
+            selectizeControler.clear();
+            selectizeControler.clearOptions();
+            selectizeControler.addOption(CCUSTO.map(e => {
+                return {
+                    value: `${e.CODCCUSTO} - ${e.NOME}`,
+                    text: `${e.CODCCUSTO} - ${e.NOME}`,
+                }
+            }));
+
+        } catch (error) {
+            showMessage("Erro ao consultar CCusto: ", error, "warning");
+            throw error;
+        }
+    }
+    async function atualizaListaCoordenadores() {
+        var coordenadores = await promiseConsultaCoordenadores();
+        $("#coordenadorNovoCentroDeCusto")[0].selectize.addOption(coordenadores.map(e => { return { value: e, text: e } }));
+    }
+    async function atualizaListaEngenheiros() {
+        var engenheiros = await promiseConsultaEngenheiros();
+        $("#liderContratoNovoCentroDeCusto")[0].selectize.addOption(engenheiros.map(e => { return { value: e, text: e } }));
+    }
+    async function atualizaListaChefes() {
+        var chefes = await promiseConsultaChefesDeEscritorio();
+        $("#chefeEscritorioNovoCentroDeCusto")[0].selectize.addOption(chefes.map(e => { return { value: e, text: e } }));
+    }
+    async function atualizaListaEstados() {
+        var estados = await asyncConsultaEstados();
+        $("#ufNovoCentroDeCusto")[0].selectize.addOption(estados.map(e => { return { value: e.ID, text: e.UF } }));
     }
 }
 
@@ -542,13 +651,13 @@ async function asyncConsultaCidades(idEstado) {
     }
 }
 function promiseConsultaCoordenadores() {
-    return new Promise((resolve, reject)=>{
-        DatasetFactory.getDataset("colleagueGroup",null,[
+    return new Promise((resolve, reject) => {
+        DatasetFactory.getDataset("colleagueGroup", null, [
             DatasetFactory.createConstraint("colleagueGroupPK.groupId", "Coordenadores de obras", "Coordenadores de obras", ConstraintType.MUST)
-        ],null,{
-            success:ds=>{
-                var retorno = ds.values.map(e=>{
-                    return e["colleagueGroupPK.colleagueId"]
+        ], null, {
+            success: ds => {
+                var retorno = ds.values.map(e => {
+                    return BuscaNomeUsuario(e["colleagueGroupPK.colleagueId"]);
                 });
                 resolve(retorno);
             }
@@ -556,13 +665,13 @@ function promiseConsultaCoordenadores() {
     });
 }
 function promiseConsultaEngenheiros() {
-        return new Promise((resolve, reject)=>{
-        DatasetFactory.getDataset("colleagueGroup",null,[
+    return new Promise((resolve, reject) => {
+        DatasetFactory.getDataset("colleagueGroup", null, [
             DatasetFactory.createConstraint("colleagueGroupPK.groupId", "Engenheiros", "Engenheiros", ConstraintType.MUST)
-        ],null,{
-            success:ds=>{
-                var retorno = ds.values.map(e=>{
-                    return e["colleagueGroupPK.colleagueId"]
+        ], null, {
+            success: ds => {
+                var retorno = ds.values.map(e => {
+                    return BuscaNomeUsuario(e["colleagueGroupPK.colleagueId"])
                 });
                 resolve(retorno);
             }
@@ -570,36 +679,49 @@ function promiseConsultaEngenheiros() {
     });
 }
 function promiseConsultaChefesDeEscritorio() {
-        return new Promise((resolve, reject)=>{
-        DatasetFactory.getDataset("colleagueGroup",null,[
+    return new Promise((resolve, reject) => {
+        DatasetFactory.getDataset("colleagueGroup", null, [
             DatasetFactory.createConstraint("colleagueGroupPK.groupId", "Chefes de Escritório", "Chefes de Escritório", ConstraintType.MUST)
-        ],null,{
-            success:ds=>{
-                var retorno = ds.values.map(e=>{
-                    return e["colleagueGroupPK.colleagueId"]
+        ], null, {
+            success: ds => {
+                var retorno = ds.values.map(e => {
+                    return BuscaNomeUsuario(e["colleagueGroupPK.colleagueId"])
                 });
                 resolve(retorno);
             }
         })
     });
 }
-function promiseConsultaColigadas(){
-    return new Promise((resolve, reject)=>{
-        DatasetFactory.getDataset("COLIGADAS",null,[
+function promiseConsultaColigadas() {
+    return new Promise((resolve, reject) => {
+        DatasetFactory.getDataset("COLIGADAS", null, [
             DatasetFactory.createConstraint("ATIVO", "T", "T", ConstraintType.MUST),
-        ],null,{
-            success:ds=>{
+        ], null, {
+            success: ds => {
                 var result = ds.values;
-                
+
                 // Remove a Coligada gloval (0)
                 result.shift();
 
-                resolve(result.map(e=>{
+                resolve(result.map(e => {
                     return {
-                        CODCOLIGADA:e.CODCOLIGADA,
-                        NOME:e.NOME,
+                        CODCOLIGADA: e.CODCOLIGADA,
+                        NOME: e.NOME,
                     }
                 }));
+            }
+        });
+    });
+}
+function promiseConsultaCCusto(CODCOLIGADA) {
+    return new Promise((resolve, reject) => {
+        DatasetFactory.getDataset("GCCUSTO", null, null, null)
+        DatasetFactory.getDataset("GCCUSTO", null, [
+            DatasetFactory.createConstraint("CODCOLIGADA", CODCOLIGADA, CODCOLIGADA, ConstraintType.MUST),
+            DatasetFactory.createConstraint("ATIVO", "T", "T", ConstraintType.MUST),
+        ], null, {
+            success: ds => {
+                resolve(ds.values);
             }
         });
     });
@@ -624,5 +746,3 @@ function formataDateToDDMMAAAA(date) {
 
     return [dia, mes, ano].join("/")
 }
-
-
