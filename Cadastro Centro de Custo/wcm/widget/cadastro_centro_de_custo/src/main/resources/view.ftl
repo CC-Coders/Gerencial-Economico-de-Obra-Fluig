@@ -107,14 +107,6 @@
                             <select name="filtroCoordenador" id="filtroCoordenador"></select>
                         </div>
                         <div class="col-md-3">
-                            <label for="filtroDataBase">Data Base</label>
-                            <input type="text" name="filtroDataBase" id="filtroDataBase" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <label for="filtroInicioObra">Início da Obra</label>
-                            <input type="text" name="filtroInicioObra" id="filtroInicioObra" class="form-control">
-                        </div>
-                        <div class="col-md-3">
                             <label for="filtroStatus">Status</label>
                             <select name="filtroStatus" id="filtroStatus" class="form-control">
                                 <option value="Ativo">Ativo</option>
@@ -144,7 +136,6 @@
                         <th>SEGMENTO</th>
                         <th>PERCENT RESULTADO</th>
                         <th>META RESULTADO</th>
-                        <th>DATA BASE</th>
                         <th>INÍCIO DA OBRA</th>
                         <th>AÇÔES</th>
                     </tr>

@@ -135,12 +135,6 @@ function initDatatableCentrosDeCusto() {
                     visible:false,
                 },
                 {
-                    data: "dt_base",
-                    render: (data) => {
-                        return formataDateToDDMMAAAA(data);
-                    }
-                },
-                {
                     data: "dt_ordem_inicio",
                     render: (data) => {
                         return formataDateToDDMMAAAA(data);
@@ -159,7 +153,6 @@ function initDatatableCentrosDeCusto() {
                     }
                 }
             ],
-
             layout: {
                 topStart: {
                     buttons: [{ extend: 'colvis', className: 'btn btn-primary' }, {extend:'excel'}]
@@ -184,7 +177,6 @@ async function atualizaDatatableCentrosDeCusto() {
         throw error;
     }
 }
-
 
 
 function promiseConsultaCentrosDeCusto() {
@@ -217,7 +209,7 @@ function getFiltrosConsultaCentrosDeCusto() {
     var filtroColigada = $("#filtroColigada")[0].selectize.items[0];
     if (filtroColigada) {
         filtros.push({
-            column: CODCOLIGADA,
+            column: "CODCOLIGADA",
             value: filtroColigada,
         });
     }
@@ -226,7 +218,7 @@ function getFiltrosConsultaCentrosDeCusto() {
     var filtroCoordenador = $("#filtroCoordenador")[0].selectize.items[0];
     if (filtroCoordenador) {
         filtros.push({
-            column: COORDENADOR,
+            column: "COORDENADOR",
             value: filtroCoordenador,
         });
     }
@@ -235,7 +227,7 @@ function getFiltrosConsultaCentrosDeCusto() {
     var filtroStatus = $("#filtroStatus").val();
     if (filtroStatus) {
         filtros.push({
-            column: STATUS,
+            column: "STATUS",
             value: filtroStatus,
         });
     }
@@ -317,15 +309,25 @@ function abreModalCentroDeCusto(data, readonly) {
                 </select>
             </div>
             <div class="col-md-4">
-                <label>Situação Atual</label>
-                <select id="situacaoNovoCentroDeCusto" class="form-control">
+                <label>Tipo de Obra</label>
+                <select id="tipoObraNovoCentroDeCusto" class="form-control">
                     <option></option>
-                    <option value="Ativo">Ativo</option>
-                    <option value="Paralisado">Paralisado</option>
-                    <option value="Encerrado">Encerrado</option>
+                    <option value="Implantação">Implantação</option>
+                    <option value="Conserva">Conserva</option>
+                    <option value="Duplicação">Duplicação</option>
                 </select>
-            </div>
+            </div>          
         </div>`;
+
+        //   <div class="col-md-4">
+        //         <label>Situação Atual</label>
+        //         <select id="situacaoNovoCentroDeCusto" class="form-control">
+        //             <option></option>
+        //             <option value="Ativo">Ativo</option>
+        //             <option value="Paralisado">Paralisado</option>
+        //             <option value="Encerrado">Encerrado</option>
+        //         </select>
+        //     </div>
 
         var htmlEquipeGestao =
             `<div>
@@ -406,17 +408,6 @@ function abreModalCentroDeCusto(data, readonly) {
         </div>
         <div class="row">
             <div class="col-md-3">
-                <label>Data Base</label>
-                <div class="form-group">
-                    <div class="input-group">
-                        <input id="dataBaseNovoCentroDeCusto" class="form-control" />
-                        <div class="input-group-addon">
-                            <i class="flaticon flaticon-calendar icon-md" aria-hidden="true"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
                 <label>Início da Obra</label>
                 <div class="form-group">
                     <div class="input-group">
@@ -439,8 +430,12 @@ function abreModalCentroDeCusto(data, readonly) {
                 </div>
             </div>
             <div class="col-md-3">
-                <label>Término Contratual (Prazo)</label>
+                <label>Prazo Contratual (Dias)</label>
                 <input id="prazoContratualNovoCentroDeCusto" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label>Término Contratual</label>
+                <input id="terminoContratualNovoCentroDeCusto" class="form-control" readonly />
             </div>
         </div>`;
 
@@ -521,6 +516,8 @@ function abreModalCentroDeCusto(data, readonly) {
             onChange: function (value) {
                 const [CODCOLIGADA, NOME] = value.split(" - ");
                 atualizaListaCCusto(CODCOLIGADA);
+                atualizaListaRegionais(CODCOLIGADA);
+
             }
         });
         $("#ccustoNovoCentroDeCusto").selectize();
@@ -541,7 +538,7 @@ function abreModalCentroDeCusto(data, readonly) {
         });
 
         $("#metaResultadoNovoCentroDeCusto").maskMoney({ suffix: "%", precision:10 });
-        $("#prazoContratualNovoCentroDeCusto").maskMoney({ suffix: " Dias", precision:0 });
+        $("#prazoContratualNovoCentroDeCusto").maskMoney({ suffix: " Dias", precision:0, thousand:"." });
         $("#percentualCastilhoNovoCentroDeCusto").maskMoney({ suffix: " %",precision:10 });
 
         atualizaListaEmpresas();
@@ -558,6 +555,11 @@ function abreModalCentroDeCusto(data, readonly) {
             } else {
                 $("#divDadosConsorcio").hide();
             }
+        });
+
+        $("#inicioObraNovoCentroDeCusto, #prazoContratualNovoCentroDeCusto").on("change", function(){
+            var dataTerminoContratual = calculaDataTerminoContratual().split("-").reverse().join("/");
+            $("#terminoContratualNovoCentroDeCusto").val(dataTerminoContratual);
         });
     }
 
@@ -610,6 +612,31 @@ function abreModalCentroDeCusto(data, readonly) {
             throw error;
         }
 
+    }
+    async function atualizaListaRegionais(CODCOLIGADA) {
+        try {
+            var regionais = await promiseConsultaRegionais(CODCOLIGADA);
+            $("#regionalNovoCentroDeCusto")[0].selectize.addOption(regionais.map(e => { 
+                return { value: e.NOME, text: e.NOME } 
+            }));            
+        } catch (error) {
+            throw error;
+        }
+
+    }
+}
+function calculaDataTerminoContratual(){
+    try {
+        var dataInicio = $("#inicioObraNovoCentroDeCusto").val().split("/").reverse().join("-");
+        var dataInicio = moment(dataInicio);
+
+        var prazoTerminoEmDias = parseInt($("#prazoContratualNovoCentroDeCusto").val().replace("Dias","").split(".").join("").trim());
+        var dataTermino = dataInicio.add(prazoTerminoEmDias, "days").format("YYYY-MM-DD");
+
+        return dataTermino;
+    } catch (error) {
+        showMessage("Não foi possivel calcula o Término Contratual", error, "warning");
+        throw error;
     }
 }
 
@@ -752,6 +779,28 @@ function promiseConsultaClientes(){
                 resolve(JSON.parse(ds.values[0].RESULT));
             },error:e=>{
                 showMessage("Erro ao consultar Clientes", e, "warning");
+                log.error(e);
+                reject(e);
+            }
+        });
+    });
+}
+function promiseConsultaRegionais(CODCOLIGADA){
+     return new Promise((resolve, reject)=>{
+        DatasetFactory.getDataset("dsConsultaRegionais", null, [
+            DatasetFactory.createConstraint("CODCOLIGADA",CODCOLIGADA,CODCOLIGADA,ConstraintType.MUST)
+        ], null,{
+            success:ds=>{
+                var status = ds.values[0].STATUS;
+                if (status != "SUCCESS") {
+                    showMessage("Erro ao consultar Regionais", e, "warning");
+                    log.error(e);
+                    reject(e);
+                }
+
+                resolve(JSON.parse(ds.values[0].RESULT));
+            },error:e=>{
+                showMessage("Erro ao consultar Regionais", e, "warning");
                 log.error(e);
                 reject(e);
             }
