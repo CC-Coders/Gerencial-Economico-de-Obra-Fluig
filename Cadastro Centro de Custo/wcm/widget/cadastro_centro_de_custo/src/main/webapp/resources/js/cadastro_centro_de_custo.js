@@ -224,14 +224,6 @@ function getFiltrosConsultaCentrosDeCusto() {
     }
 
 
-    var filtroStatus = $("#filtroStatus").val();
-    if (filtroStatus) {
-        filtros.push({
-            column: "STATUS",
-            value: filtroStatus,
-        });
-    }
-
     return filtros;
 }
 
@@ -275,11 +267,11 @@ function abreModalCentroDeCusto(data, readonly) {
                 </div>
                 <div class="col-md-6">
                     <label>Nº do Contrato</label>
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" id="numeroContratoNovoCentroDeCusto">
                 </div>
                 <div class="col-md-12">
                     <label>Objeto do Contrato</label>
-                    <textarea class="form-control" rows=3></textarea>                    
+                    <textarea class="form-control" rows=3 id="objetoContratoNovoCentroDeCusto"></textarea>                    
                 </div>
             </div>`;
 
@@ -384,10 +376,6 @@ function abreModalCentroDeCusto(data, readonly) {
             <hr class="hrCastilho">
         </div>
         <div class="row">
-            <div class="col-md-12">
-                <label>Endereço</label>
-                <input id="enderecoNovoCentroDeCusto" class="form-control" type="text" />
-            </div>
             <div class="col-md-4">
                 <label>UF</label>
                 <select id="ufNovoCentroDeCusto"></select>
@@ -531,15 +519,18 @@ function abreModalCentroDeCusto(data, readonly) {
         $("#cidadeNovoCentroDeCusto").selectize();
         $("#ufNovoCentroDeCusto").selectize({
             onChange: async function (value) {
+                var [ID, UF] = value.split(" - ");
+
+
                 $("#cidadeNovoCentroDeCusto")[0].selectize.clearOptions();
-                var cidades = await asyncConsultaCidades(value);
+                var cidades = await asyncConsultaCidades(ID);
                 $("#cidadeNovoCentroDeCusto")[0].selectize.addOption(cidades.map(e => { return { value: e.cidade, text: e.cidade } }));
             }
         });
 
-        $("#metaResultadoNovoCentroDeCusto").maskMoney({ suffix: "%", precision:10 });
-        $("#prazoContratualNovoCentroDeCusto").maskMoney({ suffix: " Dias", precision:0, thousand:"." });
-        $("#percentualCastilhoNovoCentroDeCusto").maskMoney({ suffix: " %",precision:10 });
+        $("#metaResultadoNovoCentroDeCusto").maskMoney({ suffix: "%", precision: 10, reverse: true });
+        $("#prazoContratualNovoCentroDeCusto").maskMoney({ suffix: " Dias", precision: 0, thousand: "." });
+        $("#percentualCastilhoNovoCentroDeCusto").maskMoney({ suffix: " %", precision: 10, reverse: true });
 
         atualizaListaEmpresas();
         atualizaListaCoordenadores();
@@ -565,7 +556,7 @@ function abreModalCentroDeCusto(data, readonly) {
 
     async function atualizaListaEmpresas() {
         var coligadas = await promiseConsultaColigadas();
-        $("#empresaNovoCentroDeCusto")[0].selectize.addOption(coligadas.map(e => { return { value: e.CODCOLIGADA, text: `${e.CODCOLIGADA} - ${e.NOME}` } }));
+        $("#empresaNovoCentroDeCusto")[0].selectize.addOption(coligadas.map(e => { return { value: `${e.CODCOLIGADA} - ${e.NOME}`, text: `${e.CODCOLIGADA} - ${e.NOME}` } }));
 
     }
     async function atualizaListaCCusto(CODCOLIGADA) {
@@ -600,7 +591,7 @@ function abreModalCentroDeCusto(data, readonly) {
     }
     async function atualizaListaEstados() {
         var estados = await asyncConsultaEstados();
-        $("#ufNovoCentroDeCusto")[0].selectize.addOption(estados.map(e => { return { value: e.ID, text: e.UF } }));
+        $("#ufNovoCentroDeCusto")[0].selectize.addOption(estados.map(e => { return { value: `${e.ID} - ${e.UF}`, text: e.UF } }));
     }
     async function atualizaListaClientes() {
         try {
@@ -640,6 +631,92 @@ function calculaDataTerminoContratual(){
     }
 }
 
+
+// CRUD
+function insereNovoCentroDeCusto(){
+    return new Promise((resolve, reject)=>{
+        var [CODCOLIGADA, NOMECOLIGADA] = $("#empresaNovoCentroDeCusto").val().split(" - ");
+        var [CODCCUSTO, CCUSTO] = $("#ccustoNovoCentroDeCusto").val().split(" - ");
+        var [CODCFO, CGCCFO, NOMECLIENTE] = $("#clienteNovoCentroDeCusto").val().split(" - ");
+        var NUMEROCONTRATO = $("#numeroContratoNovoCentroDeCusto").val();
+        var OBJETOCONTRATO = $("#objetoContratoNovoCentroDeCusto").val();
+
+        var SEGMENTO = $("#segmentoNovoCentroDeCusto").val();
+        var SETOR = $("#setorNovoCentroDeCusto").val();
+        var TIPO_OBRA = $("#tipoObraNovoCentroDeCusto").val();
+
+        var REGIONAL = $("#regionalNovoCentroDeCusto").val();
+        var COORDENADOR = $("#coordenadorNovoCentroDeCusto").val();
+        var ENGEHEIRO = $("#liderContratoNovoCentroDeCusto").val();
+        var CHEFE_ESCRITORIO = $("#chefeEscritorioNovoCentroDeCusto").val();
+
+        var DATA_INICIO_OBRA = $("#inicioObraNovoCentroDeCusto").val().split("/").reverse().join("-");
+        var DATA_TERMINO_OBRA = $("#terminoObraNovoCentroDeCusto").val().split("/").reverse().join("-");
+        var PRAZO_OBRA_EM_DIAS = $("#prazoContratualNovoCentroDeCusto").val().replace("Dias","").trim();
+        var DATA_TERMINO_CONTRATUAL = $("#terminoContratualNovoCentroDeCusto").val().split("/").reverse().join("-");
+
+        var PERCENTUAL_CASTILHO = $("#percentualCastilhoNovoCentroDeCusto").val().replace("%","").trim()/100;
+        var META_RESULTADO = $("#metaResultadoNovoCentroDeCusto").val().replace("%","").trim()/100;
+        
+        var [ID, UF] = $("#ufNovoCentroDeCusto").val().split(" - ");
+        var CIDADE = $("#cidadeNovoCentroDeCusto").val();
+
+        var IS_CONSORCIO = $("#checkboxConsorcio").is(":checked");
+        
+        if (IS_CONSORCIO) {
+            var DESCRICAO_CONSORCIO = $("#descricaoConsorcio").val();
+            var STATUS_CONSORCIO = "true";
+        }else{
+            var DESCRICAO_CONSORCIO ="";
+            var STATUS_CONSORCIO = "false";
+        }
+
+        var constraints = [
+            DatasetFactory.createConstraint("ACTION", "UPDATE", "UPDATE", ConstraintType.MUST),
+            DatasetFactory.createConstraint("CODCOLIGADA", CODCOLIGADA, CODCOLIGADA, ConstraintType.MUST),
+            DatasetFactory.createConstraint("NOMECOLIGADA", NOMECOLIGADA, NOMECOLIGADA, ConstraintType.MUST),
+            DatasetFactory.createConstraint("CODCCUSTO", CODCCUSTO, CODCCUSTO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("CCUSTO", CCUSTO, CCUSTO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("CODCFO", CODCFO, CODCFO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("CGCCFO", CGCCFO, CGCCFO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("NOMECLIENTE", NOMECLIENTE, NOMECLIENTE, ConstraintType.MUST),
+            DatasetFactory.createConstraint("NUMEROCONTRATO", NUMEROCONTRATO, NUMEROCONTRATO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("OBJETOCONTRATO", OBJETOCONTRATO, OBJETOCONTRATO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("SEGMENTO", SEGMENTO, SEGMENTO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("SETOR", SETOR, SETOR, ConstraintType.MUST),
+            DatasetFactory.createConstraint("TIPO_OBRA", TIPO_OBRA, TIPO_OBRA, ConstraintType.MUST),
+            DatasetFactory.createConstraint("REGIONAL", REGIONAL, REGIONAL, ConstraintType.MUST),
+            DatasetFactory.createConstraint("COORDENADOR", COORDENADOR, COORDENADOR, ConstraintType.MUST),
+            DatasetFactory.createConstraint("ENGEHEIRO", ENGEHEIRO, ENGEHEIRO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("CHEFE_ESCRITORIO", CHEFE_ESCRITORIO, CHEFE_ESCRITORIO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("DATA_INICIO_OBRA", DATA_INICIO_OBRA, DATA_INICIO_OBRA, ConstraintType.MUST),
+            DatasetFactory.createConstraint("DATA_TERMINO_OBRA", DATA_TERMINO_OBRA, DATA_TERMINO_OBRA, ConstraintType.MUST),
+            DatasetFactory.createConstraint("PRAZO_OBRA_EM_DIAS", PRAZO_OBRA_EM_DIAS, PRAZO_OBRA_EM_DIAS, ConstraintType.MUST),
+            DatasetFactory.createConstraint("DATA_TERMINO_CONTRATUAL", DATA_TERMINO_CONTRATUAL, DATA_TERMINO_CONTRATUAL, ConstraintType.MUST),
+            DatasetFactory.createConstraint("PERCENTUAL_CASTILHO", PERCENTUAL_CASTILHO, PERCENTUAL_CASTILHO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("META_RESULTADO", META_RESULTADO, META_RESULTADO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("UF", UF, UF, ConstraintType.MUST),
+            DatasetFactory.createConstraint("CIDADE", CIDADE, CIDADE, ConstraintType.MUST),
+            DatasetFactory.createConstraint("IS_CONSORCIO", IS_CONSORCIO, IS_CONSORCIO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("DESCRICAO_CONSORCIO", DESCRICAO_CONSORCIO, DESCRICAO_CONSORCIO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("STATUS_CONSORCIO", STATUS_CONSORCIO, STATUS_CONSORCIO, ConstraintType.MUST),
+        ];
+
+        DatasetFactory.getDataset("dsCadastroCentroDeCustoBigQuery",null,constraints,null,{
+            success:ds=>{
+                var STATUS = ds.values[0].STATUS;
+                if (STATUS != "SUCCESS") {
+                    reject(ds.values[0].MENSAGEM);
+                }
+
+                resolve(true);
+            },
+            error:e=>{
+                reject(e);
+            }
+        });
+    });
+}
 
 
 
