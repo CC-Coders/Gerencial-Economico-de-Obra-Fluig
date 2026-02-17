@@ -54,6 +54,10 @@ function init() {
     $("#btnNovoCentroDeCusto").on("click", function () {
         abreModalCentroDeCusto();
     });
+
+    $("#btnBuscarCCusto").on("click", function () {
+        atualizaDatatableCentrosDeCusto();
+    });
 }
 
 // Filtros
@@ -72,6 +76,12 @@ async function initFiltros() {
 
     var coordenadores = await promiseConsultaCoordenadores();
     $("#filtroCoordenador")[0].selectize.addOption(coordenadores.map(e => { return { value: e, text: e } }));
+
+    var clientes = await promiseConsultaClientes();
+    $("#filtroCliente")[0].selectize.addOption(clientes.map(e => {
+        var cliente = `${e.CGCCFO} - ${e.NOMEFANTASIA}`;
+        return { value: `${e.CODCFO} - ${cliente}`, text: cliente }
+    }));
 }
 function consultaCoordenadores() {
 
@@ -119,6 +129,10 @@ function initDatatableCentrosDeCusto() {
                     visible: false,
                 },
                 {
+                    data: "des_uf",
+                    visible: false,
+                },
+                {
                     data: "des_setor",
                     visible: false,
                 },
@@ -136,8 +150,12 @@ function initDatatableCentrosDeCusto() {
                 },
                 {
                     data: "dt_ordem_inicio",
-                    render: (data) => {
-                        return formataDateToDDMMAAAA(data);
+                    render: function (data, type) {
+                        if (type === "sort") {
+                            return formataDateToAAAAMMDD(data);
+                        } else {
+                            return formataDateToDDMMAAAA(data);
+                        }
                     }
                 },
                 {
@@ -153,6 +171,10 @@ function initDatatableCentrosDeCusto() {
                     }
                 }
             ],
+            order: {
+                name: 'dt_ordem_inicio',
+                dir: 'desc'
+            },
             layout: {
                 topStart: {
                     buttons: [{ extend: 'colvis', className: 'btn btn-primary' }, { extend: 'excel' }]
@@ -227,27 +249,47 @@ function getFiltrosConsultaCentrosDeCusto() {
     var filtroColigada = $("#filtroColigada")[0].selectize.items[0];
     if (filtroColigada) {
         filtros.push({
-            column: "CODCOLIGADA",
+            column: "cod_coligada",
             value: filtroColigada,
+            type: "int"
         });
     }
 
+    var filtroCliente = $("#filtroCliente")[0].selectize.items[0];
+    if (filtroCliente) {
+        filtros.push({
+            column: "cod_cfo",
+            value: filtroCliente.split(" - ")[0],
+            type: "text"
+
+        });
+    }
 
     var filtroCoordenador = $("#filtroCoordenador")[0].selectize.items[0];
     if (filtroCoordenador) {
         filtros.push({
-            column: "COORDENADOR",
+            column: "des_coordenacao",
             value: filtroCoordenador,
+            type: "text"
         });
     }
 
+    var filtroContrato = $("#filtroContrato").val();
+    if (filtroContrato) {
+        filtros.push({
+            column: "des_contrato",
+            value: "%" + filtroContrato + "%",
+            LIKE_SEARCH: true,
+            type: "text"
+        });
+    }
 
     return filtros;
 }
 
 // Modal
 function abreModalCentroDeCusto(data, readonly) {
-    var myModal = FLUIGC.modal({
+    myModal = FLUIGC.modal({
         title: 'Detalhes Centro de Custo',
         content: getHTML(),
         id: 'fluig-modal',
@@ -259,17 +301,30 @@ function abreModalCentroDeCusto(data, readonly) {
         } else {
             initModalNovoCentroDeCusto(data, readonly);
 
-            $("[data-salvar]").on("click", function(){
-                if (data) {
-                    createOuUpdateNovoCentroDeCusto("UPDATE");
-                }else{
-                    createOuUpdateNovoCentroDeCusto("CREATE");
+            $("[data-salvar]").on("click", async function () {
+                try {
+                    var valida = validaPreenchimentoDoCadastroDeCCusto();
+                    if (valida.length>0) {
+                        throw  valida.map(e=>`<li>${e}</li>`).join("");
+                    }else{
+                        var ACTION = data ? "UPDATE" : "CREATE";
+                        var retorno = await createOuUpdateNovoCentroDeCusto(ACTION);
+                        if (retorno === true) {
+                            showMessage("Centro de Custo atualizado!", "", "success");
+                            myModal.remove();
+                        }else{
+                            showMessage("Erro ao cadastrar Centro de Custo", retorno, "warning");
+                        }
+                    }
+
+                } catch (error) {
+                    showMessage("Erro ao cadastrar Centro de Custo", error, "warning");
                 }
             });
         }
     });
 
-    
+
     function getHTML() {
         var htmlHidden = `<div style="display:none;">
             <input type="hidden" id="hiddenCODCOLIGADA"/>
@@ -300,6 +355,10 @@ function abreModalCentroDeCusto(data, readonly) {
                 <div class="col-md-6">
                     <label>Nº do Contrato</label>
                     <input type="text" class="form-control" id="numeroContratoNovoCentroDeCusto">
+                </div>
+                <div class="col-md-12">
+                    <label>Projeto</label>
+                    <select id="projetoNovoCentroDeCusto"></select>
                 </div>
                 <div class="col-md-12">
                     <label>Objeto do Contrato</label>
@@ -518,6 +577,24 @@ function abreModalCentroDeCusto(data, readonly) {
         }
     }
     async function initModalNovoCentroDeCusto(data, readonly) {
+        var myLoading2 = FLUIGC.loading(window, {
+            title: "Carregando...",
+            title: null,
+            overlayCSS: {
+                backgroundColor: '#000',
+                opacity: 0.6,
+                cursor: 'wait'
+            },
+            cursorReset: 'default',
+            centerX: true,
+            centerY: true,
+            bindEvents: true,
+            fadeIn: 200,
+            fadeOut: 400,
+            timeout: 0,
+            ignoreIfBlocked: false
+        });
+        myLoading2.show();
         console.log(data)
 
         FLUIGC.calendar("#dataBaseNovoCentroDeCusto");
@@ -533,8 +610,15 @@ function abreModalCentroDeCusto(data, readonly) {
 
             }
         });
-        $("#ccustoNovoCentroDeCusto").selectize();
+        $("#ccustoNovoCentroDeCusto").selectize({
+            onChange: function (value) {
+                var CODCOLIGADA = $("#empresaNovoCentroDeCusto")[0].selectize.getValue().split(" - ")[0];
+                const [CODCCUSTO, NOME] = value.split(" - ");
+                atualizaListaProjetos(CODCOLIGADA, CODCCUSTO);
+            }
+        });
         $("#clienteNovoCentroDeCusto").selectize();
+        $("#projetoNovoCentroDeCusto").selectize();
 
         $("#regionalNovoCentroDeCusto").selectize();
         $("#coordenadorNovoCentroDeCusto").selectize();
@@ -562,7 +646,7 @@ function abreModalCentroDeCusto(data, readonly) {
         atualizaListaEngenheiros();
         atualizaListaChefes();
         atualizaListaEstados();
-        atualizaListaClientes();
+        await atualizaListaClientes();
 
         $("#divDadosConsorcio").hide();
         $("#checkboxConsorcio").on("change", function () {
@@ -582,101 +666,106 @@ function abreModalCentroDeCusto(data, readonly) {
             preencheData(data);
         }
 
-        if(readonly){
+        if (readonly) {
             setReadonly();
         }
+
+        myLoading2.hide();
 
     }
 
     function preencheData(data) {
+
         $("#hiddenCODCOLIGADA").val(data.cod_coligada);
         $("#hiddenCODCCUSTO").val(data.cod_obra);
 
+        $("#empresaNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_coligada} - ${data.des_empresa}`);
+
         setTimeout(() => {
-            $("#empresaNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_coligada} - ${data.des_empresa}`);
-
+            $("#ccustoNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_obra} - ${data.des_centro_custo}`);
+            $("#clienteNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_cfo} - ${data.cnpj_cliente} - ${data.des_cliente}`);
+            $("#regionalNovoCentroDeCusto")[0].selectize.setValue(data.des_regiao);
             setTimeout(() => {
-                $("#ccustoNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_obra} - ${data.des_centro_custo}`);
-                $("#clienteNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_cfo} - ${data.cnpj_cliente} - ${data.des_cliente}`);
-                $("#regionalNovoCentroDeCusto")[0].selectize.setValue(data.des_regiao);
-            }, 1000);
-
-            $("#numeroContratoNovoCentroDeCusto").val(data.des_contrato);
-            $("#objetoContratoNovoCentroDeCusto").val(data.des_objeto_contrato);
-
-            $("#segmentoNovoCentroDeCusto").val(data.des_segmento);
-            $("#setorNovoCentroDeCusto").val(data.des_setor);
-            $("#tipoObraNovoCentroDeCusto").val(data.des_tipo_segmento);
-
-            $("#coordenadorNovoCentroDeCusto")[0].selectize.setValue(data.des_coordenacao);
-            $("#liderContratoNovoCentroDeCusto")[0].selectize.setValue(data.des_lider_contrato);
-            $("#chefeEscritorioNovoCentroDeCusto")[0].selectize.setValue(data.des_chefe_escritorio);
-
-            $("#inicioObraNovoCentroDeCusto").val(formataDateToDDMMAAAA(data.dt_ordem_inicio));
-            if (data.dt_termino_obra) {
-                $("#terminoObraNovoCentroDeCusto").val(formataDateToDDMMAAAA(data.dt_termino_obra));
-            }
-            $("#prazoContratualNovoCentroDeCusto").val(data.qt_prazo_contratual + " Dias");
-            $("#terminoContratualNovoCentroDeCusto").val(formataDateToDDMMAAAA(data.dt_termino_contratual));
-
-            $("#percentualCastilhoNovoCentroDeCusto").val(parseFloat(data.per_castilho).toFixed(10) + " %");
-            $("#metaResultadoNovoCentroDeCusto").val(parseFloat(data.per_meta_resultado).toFixed(10) + " %");
-
-            var options = $("#ufNovoCentroDeCusto")[0].selectize.options;
-            for (const key in options) {
-                if (!Object.hasOwn(options, key)) continue;
-
-                if (key.split(" - ")[1] == data.des_uf) {
-                    $("#ufNovoCentroDeCusto")[0].selectize.setValue(key);
-                }
-            }
-
-            setTimeout(() => {
-                $("#cidadeNovoCentroDeCusto")[0].selectize.setValue(data.des_cidade);
-            }, 1000);
-
-            if (data.st_consorcio == true) {
-                $("#checkboxConsorcio").attr("checked", "checked");
-                $("#checkboxConsorcio").trigger("change");
-
-                $("#descricaoConsorcio").val(data.des_consorcio);
-            }
+                $("#projetoNovoCentroDeCusto")[0].selectize.setValue(data.idprj);
+            }, 500);
         }, 1000);
 
+        $("#numeroContratoNovoCentroDeCusto").val(data.des_contrato);
+        $("#objetoContratoNovoCentroDeCusto").val(data.des_objeto_contrato);
+
+        $("#segmentoNovoCentroDeCusto").val(data.des_segmento);
+        $("#setorNovoCentroDeCusto").val(data.des_setor);
+        $("#tipoObraNovoCentroDeCusto").val(data.des_tipo_segmento);
+
+        $("#coordenadorNovoCentroDeCusto")[0].selectize.setValue(data.des_coordenacao);
+        $("#liderContratoNovoCentroDeCusto")[0].selectize.setValue(data.des_lider_contrato);
+        $("#chefeEscritorioNovoCentroDeCusto")[0].selectize.setValue(data.des_chefe_escritorio);
+
+        $("#inicioObraNovoCentroDeCusto").val(formataDateToDDMMAAAA(data.dt_ordem_inicio));
+        if (data.dt_termino_obra) {
+            $("#terminoObraNovoCentroDeCusto").val(formataDateToDDMMAAAA(data.dt_termino_obra));
+        }
+        $("#prazoContratualNovoCentroDeCusto").val(data.qt_prazo_contratual + " Dias");
+        $("#terminoContratualNovoCentroDeCusto").val(formataDateToDDMMAAAA(data.dt_termino_contratual));
+
+        $("#percentualCastilhoNovoCentroDeCusto").val((data.per_castilho * 100).toFixed(10) + " %");
+        $("#metaResultadoNovoCentroDeCusto").val((data.per_meta_resultado * 100).toFixed(10) + " %");
+
+        var options = $("#ufNovoCentroDeCusto")[0].selectize.options;
+        for (const key in options) {
+            if (!Object.hasOwn(options, key)) continue;
+
+            if (key.split(" - ")[1] == data.des_uf) {
+                $("#ufNovoCentroDeCusto")[0].selectize.setValue(key);
+            }
+        }
+
+        setTimeout(() => {
+            $("#cidadeNovoCentroDeCusto")[0].selectize.setValue(data.des_cidade);
+        }, 1000);
+
+        if (data.st_consorcio == true) {
+            $("#checkboxConsorcio").attr("checked", "checked");
+            $("#checkboxConsorcio").trigger("change");
+
+            $("#descricaoConsorcio").val(data.des_consorcio);
+        }
+
     }
-    function setReadonly(){
+    function setReadonly() {
         $("#empresaNovoCentroDeCusto")[0].selectize.lock();
         $("#ccustoNovoCentroDeCusto")[0].selectize.lock();
         $("#clienteNovoCentroDeCusto")[0].selectize.lock();
-        
-        $("#numeroContratoNovoCentroDeCusto").attr("readonly","readonly");
-        $("#objetoContratoNovoCentroDeCusto").attr("readonly","readonly");
-        
-        $("#segmentoNovoCentroDeCusto").attr("readonly","readonly");
-        $("#setorNovoCentroDeCusto").attr("readonly","readonly");
-        $("#tipoObraNovoCentroDeCusto").attr("readonly","readonly");
-        
+        $("#projetoNovoCentroDeCusto")[0].selectize.lock();
+
+        $("#numeroContratoNovoCentroDeCusto").attr("readonly", "readonly");
+        $("#objetoContratoNovoCentroDeCusto").attr("readonly", "readonly");
+
+        $("#segmentoNovoCentroDeCusto").attr("readonly", "readonly");
+        $("#setorNovoCentroDeCusto").attr("readonly", "readonly");
+        $("#tipoObraNovoCentroDeCusto").attr("readonly", "readonly");
+
         $("#regionalNovoCentroDeCusto")[0].selectize.lock();
         $("#coordenadorNovoCentroDeCusto")[0].selectize.lock();
         $("#liderContratoNovoCentroDeCusto")[0].selectize.lock();
         $("#chefeEscritorioNovoCentroDeCusto")[0].selectize.lock();
 
-        $("#inicioObraNovoCentroDeCusto").attr("readonly","readonly");
-        $("#terminoObraNovoCentroDeCusto").attr("readonly","readonly");
-        $("#prazoContratualNovoCentroDeCusto").attr("readonly","readonly");
-        
-        
-        $("#percentualCastilhoNovoCentroDeCusto").attr("readonly","readonly");
-        $("#metaResultadoNovoCentroDeCusto").attr("readonly","readonly");
+        $("#inicioObraNovoCentroDeCusto").attr("readonly", "readonly");
+        $("#terminoObraNovoCentroDeCusto").attr("readonly", "readonly");
+        $("#prazoContratualNovoCentroDeCusto").attr("readonly", "readonly");
+
+
+        $("#percentualCastilhoNovoCentroDeCusto").attr("readonly", "readonly");
+        $("#metaResultadoNovoCentroDeCusto").attr("readonly", "readonly");
 
         $("#ufNovoCentroDeCusto")[0].selectize.lock();
         $("#cidadeNovoCentroDeCusto")[0].selectize.lock();
 
 
-        $("#checkboxConsorcio").attr("disabled","disabled");
-        
-        $("#descricaoConsorcio").attr("readonly","readonly");
-        $("#statusConsorcio").attr("readonly","readonly");
+        $("#checkboxConsorcio").attr("disabled", "disabled");
+
+        $("#descricaoConsorcio").attr("readonly", "readonly");
+        $("#statusConsorcio").attr("readonly", "readonly");
     }
 
     async function atualizaListaEmpresas() {
@@ -741,13 +830,24 @@ function abreModalCentroDeCusto(data, readonly) {
         }
 
     }
+    async function atualizaListaProjetos(CODCOLIGADA, CODCCUSTO) {
+        try {
+            var projetos = await promiseConsultaProjetos(CODCOLIGADA, CODCCUSTO);
+            $("#projetoNovoCentroDeCusto")[0].selectize.addOption(projetos.map(e => {
+                return { value: e.IDPRJ, text: `${e.CODPRJ} - ${e.DESCRICAO}` }
+            }));
+        } catch (error) {
+            throw error;
+        }
+
+    }
 }
 function calculaDataTerminoContratual() {
     try {
         var dataInicio = $("#inicioObraNovoCentroDeCusto").val().split("/").reverse().join("-");
         var dataInicio = moment(dataInicio);
 
-        var prazoTerminoEmDias = parseInt($("#prazoContratualNovoCentroDeCusto").val().replace("Dias", "").split(".").join("").trim());
+        var prazoTerminoEmDias = parseInt($("#prazoContratualNovoCentroDeCusto").val().replace("Dias", "").split(",").join("").trim());
         var dataTermino = dataInicio.add(prazoTerminoEmDias, "days").format("YYYY-MM-DD");
 
         return dataTermino;
@@ -760,11 +860,20 @@ function calculaDataTerminoContratual() {
 
 // CRUD
 function createOuUpdateNovoCentroDeCusto(ACTION) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         var [CODCOLIGADA, NOMECOLIGADA] = $("#empresaNovoCentroDeCusto").val().split(" - ");
         var [CODCCUSTO, CCUSTO] = $("#ccustoNovoCentroDeCusto").val().split(" - ");
+
+        if (ACTION == "CREATE") {
+            var isCCustoCadastrado = await verificaSeExisteCadastroProCCUSTO(CODCOLIGADA, CODCCUSTO);
+            if (isCCustoCadastrado.length > 0) {
+                reject("Centro de Custo já cadastrado.");
+            }
+        }
+
         var [CODCFO, CGCCFO, NOMECLIENTE] = $("#clienteNovoCentroDeCusto").val().split(" - ");
         var NUMEROCONTRATO = $("#numeroContratoNovoCentroDeCusto").val();
+        var IDPRJ = $("#projetoNovoCentroDeCusto").val();
         var OBJETOCONTRATO = $("#objetoContratoNovoCentroDeCusto").val();
 
         var SEGMENTO = $("#segmentoNovoCentroDeCusto").val();
@@ -778,11 +887,11 @@ function createOuUpdateNovoCentroDeCusto(ACTION) {
 
         var DATA_INICIO_OBRA = $("#inicioObraNovoCentroDeCusto").val().split("/").reverse().join("-");
         var DATA_TERMINO_OBRA = $("#terminoObraNovoCentroDeCusto").val().split("/").reverse().join("-");
-        var PRAZO_OBRA_EM_DIAS = $("#prazoContratualNovoCentroDeCusto").val().replace("Dias", "").trim();
+        var PRAZO_OBRA_EM_DIAS = $("#prazoContratualNovoCentroDeCusto").val().replace("Dias", "").split(",").join("").trim();
         var DATA_TERMINO_CONTRATUAL = $("#terminoContratualNovoCentroDeCusto").val().split("/").reverse().join("-");
 
-        var PERCENTUAL_CASTILHO = $("#percentualCastilhoNovoCentroDeCusto").val().replace("%", "").trim() / 100;
-        var META_RESULTADO = $("#metaResultadoNovoCentroDeCusto").val().replace("%", "").trim() / 100;
+        var PERCENTUAL_CASTILHO = ($("#percentualCastilhoNovoCentroDeCusto").val().replace("%", "").trim() / 100).toFixed(10);
+        var META_RESULTADO = ($("#metaResultadoNovoCentroDeCusto").val().replace("%", "").trim() / 100).toFixed(10);
 
         var [ID, UF] = $("#ufNovoCentroDeCusto").val().split(" - ");
         var CIDADE = $("#cidadeNovoCentroDeCusto").val();
@@ -807,6 +916,7 @@ function createOuUpdateNovoCentroDeCusto(ACTION) {
             DatasetFactory.createConstraint("CGCCFO", CGCCFO, CGCCFO, ConstraintType.MUST),
             DatasetFactory.createConstraint("NOMECLIENTE", NOMECLIENTE, NOMECLIENTE, ConstraintType.MUST),
             DatasetFactory.createConstraint("NUMEROCONTRATO", NUMEROCONTRATO, NUMEROCONTRATO, ConstraintType.MUST),
+            DatasetFactory.createConstraint("IDPRJ", IDPRJ, IDPRJ, ConstraintType.MUST),
             DatasetFactory.createConstraint("OBJETOCONTRATO", OBJETOCONTRATO, OBJETOCONTRATO, ConstraintType.MUST),
             DatasetFactory.createConstraint("SEGMENTO", SEGMENTO, SEGMENTO, ConstraintType.MUST),
             DatasetFactory.createConstraint("SETOR", SETOR, SETOR, ConstraintType.MUST),
@@ -828,12 +938,12 @@ function createOuUpdateNovoCentroDeCusto(ACTION) {
             DatasetFactory.createConstraint("STATUS_CONSORCIO", STATUS_CONSORCIO, STATUS_CONSORCIO, ConstraintType.MUST),
         ];
 
-        if (ACTION == "UPDATE") {   
-            var PKCODCOLIGADA  = $("#hiddenCODCOLIGADA").val();
-            var PKCODCCUSTO  = $("#hiddenCODCCUSTO").val();
+        if (ACTION == "UPDATE") {
+            var PKCODCOLIGADA = $("#hiddenCODCOLIGADA").val();
+            var PKCODCCUSTO = $("#hiddenCODCCUSTO").val();
 
-            constraints.push(DatasetFactory.createConstraint("PKCODCOLIGADA",PKCODCOLIGADA,PKCODCOLIGADA,ConstraintType.MUST));
-            constraints.push(DatasetFactory.createConstraint("PKCODCCUSTO",PKCODCCUSTO,PKCODCCUSTO,ConstraintType.MUST));
+            constraints.push(DatasetFactory.createConstraint("PKCODCOLIGADA", PKCODCOLIGADA, PKCODCOLIGADA, ConstraintType.MUST));
+            constraints.push(DatasetFactory.createConstraint("PKCODCCUSTO", PKCODCCUSTO, PKCODCCUSTO, ConstraintType.MUST));
         }
 
         DatasetFactory.getDataset("dsCadastroCentroDeCustoBigQuery", null, constraints, null, {
@@ -849,6 +959,117 @@ function createOuUpdateNovoCentroDeCusto(ACTION) {
                 reject(e);
             }
         });
+    });
+}
+function validaPreenchimentoDoCadastroDeCCusto() {
+    var retorno = [];
+
+    if (!$("#empresaNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar a Empresa");
+    }
+    if (!$("#ccustoNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Centro de Custo");
+    }
+    if (!$("#clienteNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Cliente");
+    }
+    if (!$("#numeroContratoNovoCentroDeCusto").val()) {
+        retorno.push("Necessário informar o Nº do Contrato");
+    }
+    if (!$("#projetoNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Projeto");
+    }
+    if (!$("#objetoContratoNovoCentroDeCusto").val()) {
+        retorno.push("Necessário informar o Objeto do Contrato");
+    }
+    if (!$("#segmentoNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Segmento");
+    }
+    if (!$("#setorNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Setor");
+    }
+    if (!$("#tipoObraNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Tipo de Obra");
+    }
+    if (!$("#regionalNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar a Regional");
+    }
+    if (!$("#coordenadorNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Coordenador");
+    }
+    if (!$("#liderContratoNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Líder de Contrato");
+    }
+    if (!$("#chefeEscritorioNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Chefe de Escritório");
+    }
+    if (!$("#inicioObraNovoCentroDeCusto").val()) {
+        retorno.push("Necessário informar a Início da Obra");
+    }
+    if (!$("#prazoContratualNovoCentroDeCusto").val()) {
+        retorno.push("Necessário informar o Prazo Contratual");
+    }
+    if (!$("#terminoContratualNovoCentroDeCusto").val()) {
+        retorno.push("Necessário informar o Término Contratual");
+    }
+    if (!$("#percentualCastilhoNovoCentroDeCusto").val()) {
+        retorno.push("Necessário informar o Percentual Castilho");
+    }
+    if (!$("#metaResultadoNovoCentroDeCusto").val()) {
+        retorno.push("Necessário informar a Meta Resultado");
+    }
+    if (!$("#ufNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar o Estado");
+    }
+    if (!$("#cidadeNovoCentroDeCusto").val()) {
+        retorno.push("Necessário selecionar a Cidade");
+    }
+
+    var IS_CONSORCIO = $("#checkboxConsorcio").is(":checked");
+
+
+    if (IS_CONSORCIO && !$("#descricaoConsorcio").val()) {
+        retorno.push("Necessário informar a Descrição do Consórcio");
+    }
+
+    return retorno;
+}
+function verificaSeExisteCadastroProCCUSTO(CODCOLIGADA, CODCCUSTO) {
+    return new Promise((resolve, reject) => {
+        var filtros = [
+            {
+                column: "cod_coligada",
+                value: CODCOLIGADA,
+                type: "int"
+            },
+            {
+                column: "cod_obra",
+                value: CODCCUSTO,
+                type: "text"
+            }
+        ];
+
+
+        DatasetFactory.getDataset("dsCadastroCentroDeCustoBigQuery", null, [
+            DatasetFactory.createConstraint("ACTION", "SELECT", "SELECT", ConstraintType.MUST),
+            DatasetFactory.createConstraint("FILTROS", JSON.stringify(filtros), JSON.stringify(filtros), ConstraintType.MUST),
+        ], null, {
+            success: ds => {
+                var STATUS = ds.values[0].STATUS;
+                if (STATUS != "SUCCESS") {
+                    showMessage("Erro ao consultar Centros de Custo", ds.values[0].MENSAGEM, "warning");
+                    reject(ds.values[0].MENSAGEM);
+                }
+
+
+                var RESULT = ds.values[0].RESULT;
+                resolve(JSON.parse(RESULT).data);
+            },
+            error: error => {
+                showMessage("Erro ao consultar Centros de Custo", error, "warning");
+                reject(ds.values[0].MENSAGEM);
+            }
+        })
     });
 }
 
@@ -1018,6 +1239,25 @@ function promiseConsultaRegionais(CODCOLIGADA) {
         });
     });
 }
+function promiseConsultaProjetos(CODCOLIGADA, CODCCUSTO) {
+    return new Promise((resolve, reject) => {
+        DatasetFactory.getDataset("dsConsultaProjetosTCOP", null, [
+            DatasetFactory.createConstraint("CODCOLIGADA", CODCOLIGADA, CODCOLIGADA, ConstraintType.MUST),
+            DatasetFactory.createConstraint("CODCCUSTO", CODCCUSTO, CODCCUSTO, ConstraintType.MUST),
+        ], null, {
+            success: ds => {
+                var STATUS = ds.values[0].STATUS;
+                if (STATUS != "SUCCESS") {
+                    reject(ds.values[0].MENSAGEM);
+                }
+
+                resolve(JSON.parse(ds.values[0].RESULT));
+            }, error: e => {
+                reject(e);
+            }
+        });
+    });
+}
 
 
 // Utils
@@ -1037,4 +1277,21 @@ function formataDateToDDMMAAAA(date) {
     var ano = date.getUTCFullYear();
 
     return [dia, mes, ano].join("/")
+}
+function formataDateToAAAAMMDD(date) {
+    var date = new Date(date);
+
+    var dia = date.getUTCDate();
+    if (dia < 10) {
+        dia = "0" + dia;
+    }
+
+    var mes = date.getUTCMonth() + 1;
+    if (mes < 10) {
+        mes = "0" + mes;
+    }
+
+    var ano = date.getUTCFullYear();
+
+    return [ano, mes, dia].join("-")
 }
