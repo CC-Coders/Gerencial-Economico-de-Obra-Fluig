@@ -65,11 +65,11 @@ async function initFiltros() {
     FLUIGC.calendar("#filtroDataBase");
     FLUIGC.calendar("#filtroInicioObra");
 
-    
+
     var coligadas = await promiseConsultaColigadas();
     $("#filtroColigada")[0].selectize.addOption(coligadas.map(e => { return { value: e.CODCOLIGADA, text: `${e.CODCOLIGADA} - ${e.NOME}` } }));
-    
-    
+
+
     var coordenadores = await promiseConsultaCoordenadores();
     $("#filtroCoordenador")[0].selectize.addOption(coordenadores.map(e => { return { value: e, text: e } }));
 }
@@ -103,36 +103,36 @@ function initDatatableCentrosDeCusto() {
                 },
                 {
                     data: "des_centro_custo",
-                    render:function(data,type,row){
+                    render: function (data, type, row) {
                         return `${row.cod_obra} - ${row.des_centro_custo}`
                     }
                 },
                 {
                     data: "des_objeto_contrato",
-                    visible:false
+                    visible: false
                 },
                 {
                     data: "des_coordenacao"
                 },
                 {
                     data: "des_regiao",
-                    visible:false,
+                    visible: false,
                 },
                 {
                     data: "des_setor",
-                    visible:false,
+                    visible: false,
                 },
                 {
                     data: "des_segmento",
-                    visible:false,
+                    visible: false,
                 },
                 {
                     data: "per_castilho",
-                    visible:false,
+                    visible: false,
                 },
                 {
                     data: "per_meta_resultado",
-                    visible:false,
+                    visible: false,
                 },
                 {
                     data: "dt_ordem_inicio",
@@ -143,10 +143,10 @@ function initDatatableCentrosDeCusto() {
                 {
                     render: function (data, row) {
                         return `<div style="display: flex;align-items: center; width:100%;">
-                                <button class="btn btn-default">
+                                <button class="btn btn-default btnViewCCusto">
                                     <i class="flaticon flaticon-view icon-sm" aria-hidden="true"></i>
                                 </button>
-                                <button class="btn btn-default">
+                                <button class="btn btn-default btnEditCCusto">
                                     <i class="flaticon flaticon-edit icon-sm" aria-hidden="true"></i>
                                 </button>
                             </div>`;
@@ -155,7 +155,7 @@ function initDatatableCentrosDeCusto() {
             ],
             layout: {
                 topStart: {
-                    buttons: [{ extend: 'colvis', className: 'btn btn-primary' }, {extend:'excel'}]
+                    buttons: [{ extend: 'colvis', className: 'btn btn-primary' }, { extend: 'excel' }]
                 }
             },
             language: datatablesLanguage
@@ -163,6 +163,24 @@ function initDatatableCentrosDeCusto() {
 
         $(dataTableCentrosDeCusto.buttons($('.buttons-colvis')).nodes()).attr("class", "buttons-collection buttons-colvis btn btn-primary");
         $(dataTableCentrosDeCusto.buttons($('.buttons-excel')).nodes()).attr("class", "buttons-excel buttons-html5 btn btn-primary");
+
+        dataTableCentrosDeCusto.on("draw", function () {
+            $(".btnViewCCusto").off("click").on("click", function () {
+                var tr = $(this).closest('tr');
+                var row = dataTableCentrosDeCusto.row(tr);
+                var data = row.data();
+                abreModalCentroDeCusto(data, true);
+
+            });
+            $(".btnEditCCusto").off("click").on("click", function () {
+                var tr = $(this).closest('tr');
+                var row = dataTableCentrosDeCusto.row(tr);
+                var data = row.data();
+                abreModalCentroDeCusto(data, false);
+
+            });
+        });
+
     } catch (error) {
         throw error;
     }
@@ -235,15 +253,29 @@ function abreModalCentroDeCusto(data, readonly) {
         id: 'fluig-modal',
         size: 'full',
         actions: getActions(readonly),
-    }, function (err, data) {
+    }, function (err) {
         if (err) {
             // do error handling
         } else {
-            initModalNovoCentroDeCusto();
+            initModalNovoCentroDeCusto(data, readonly);
+
+            $("[data-salvar]").on("click", function(){
+                if (data) {
+                    createOuUpdateNovoCentroDeCusto("UPDATE");
+                }else{
+                    createOuUpdateNovoCentroDeCusto("CREATE");
+                }
+            });
         }
     });
 
+    
     function getHTML() {
+        var htmlHidden = `<div style="display:none;">
+            <input type="hidden" id="hiddenCODCOLIGADA"/>
+            <input type="hidden" id="hiddenCODCCUSTO"/>
+        </div>`;
+
         var htmlIdentificacaoContrato =
             `<div>
                 <h3>
@@ -278,7 +310,7 @@ function abreModalCentroDeCusto(data, readonly) {
         var htmlClassificacaoStatus =
             `<div>
             <h3>
-                <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
+                <i class="flaticon flaticon-bubble-chart icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
                 Classificação e Status
             </h3>
             <hr class="hrCastilho">
@@ -311,20 +343,10 @@ function abreModalCentroDeCusto(data, readonly) {
             </div>          
         </div>`;
 
-        //   <div class="col-md-4">
-        //         <label>Situação Atual</label>
-        //         <select id="situacaoNovoCentroDeCusto" class="form-control">
-        //             <option></option>
-        //             <option value="Ativo">Ativo</option>
-        //             <option value="Paralisado">Paralisado</option>
-        //             <option value="Encerrado">Encerrado</option>
-        //         </select>
-        //     </div>
-
         var htmlEquipeGestao =
             `<div>
                 <h3>
-                    <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
+                    <i class="flaticon flaticon-community-person icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
                     Equipe de Gestão
                 </h3>
                 <hr class="hrCastilho">
@@ -351,7 +373,7 @@ function abreModalCentroDeCusto(data, readonly) {
         var htmlIndicadoresEconomicos =
             `<div>
             <h3>
-                <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
+                <i class="flaticon flaticon-trending-up icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
                 Indicadores Econômicos
             </h3>
             <hr class="hrCastilho">
@@ -370,7 +392,7 @@ function abreModalCentroDeCusto(data, readonly) {
         var htmlLocalizacaoObra =
             `<div>
             <h3>
-                <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
+                <i class="flaticon flaticon-pin-active icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
                 Localização da Obra
             </h3>
             <hr class="hrCastilho">
@@ -389,7 +411,7 @@ function abreModalCentroDeCusto(data, readonly) {
         var htmlPrazos = `
         <div>
             <h3>
-                <i class="flaticon flaticon-form-list icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
+                <i class="flaticon flaticon-calendar icon-md" style="color: var(--colorCastilho)" aria-hidden="true"></i>
                 Vigência e Prazos
             </h3>
             <hr class="hrCastilho">
@@ -448,7 +470,7 @@ function abreModalCentroDeCusto(data, readonly) {
             </div>
             <div class="col-md-6">
                 <label>Status do Consórcio</label>
-                <select class="form-control">
+                <select class="form-control" id="statusConsorcio">
                     <option></option>
                     <option value="Ativo">Ativo</option>
                     <option value="Paralisado">Paralisado</option>
@@ -458,6 +480,7 @@ function abreModalCentroDeCusto(data, readonly) {
         </div>`;
 
         return `
+            ${htmlHidden}
             ${htmlIdentificacaoContrato}
             <br/>
             ${htmlClassificacaoStatus} 
@@ -494,7 +517,9 @@ function abreModalCentroDeCusto(data, readonly) {
             }]
         }
     }
-    async function initModalNovoCentroDeCusto() {
+    async function initModalNovoCentroDeCusto(data, readonly) {
+        console.log(data)
+
         FLUIGC.calendar("#dataBaseNovoCentroDeCusto");
         FLUIGC.calendar("#inicioObraNovoCentroDeCusto");
         FLUIGC.calendar("#terminoObraNovoCentroDeCusto");
@@ -528,7 +553,7 @@ function abreModalCentroDeCusto(data, readonly) {
             }
         });
 
-        $("#metaResultadoNovoCentroDeCusto").maskMoney({ suffix: "%", precision: 10, reverse: true });
+        $("#metaResultadoNovoCentroDeCusto").maskMoney({ suffix: " %", precision: 10, reverse: true });
         $("#prazoContratualNovoCentroDeCusto").maskMoney({ suffix: " Dias", precision: 0, thousand: "." });
         $("#percentualCastilhoNovoCentroDeCusto").maskMoney({ suffix: " %", precision: 10, reverse: true });
 
@@ -538,7 +563,7 @@ function abreModalCentroDeCusto(data, readonly) {
         atualizaListaChefes();
         atualizaListaEstados();
         atualizaListaClientes();
-    
+
         $("#divDadosConsorcio").hide();
         $("#checkboxConsorcio").on("change", function () {
             if ($(this).is(":checked")) {
@@ -548,10 +573,110 @@ function abreModalCentroDeCusto(data, readonly) {
             }
         });
 
-        $("#inicioObraNovoCentroDeCusto, #prazoContratualNovoCentroDeCusto").on("change", function(){
+        $("#inicioObraNovoCentroDeCusto, #prazoContratualNovoCentroDeCusto").on("change", function () {
             var dataTerminoContratual = calculaDataTerminoContratual().split("-").reverse().join("/");
             $("#terminoContratualNovoCentroDeCusto").val(dataTerminoContratual);
         });
+
+        if (data) {
+            preencheData(data);
+        }
+
+        if(readonly){
+            setReadonly();
+        }
+
+    }
+
+    function preencheData(data) {
+        $("#hiddenCODCOLIGADA").val(data.cod_coligada);
+        $("#hiddenCODCCUSTO").val(data.cod_obra);
+
+        setTimeout(() => {
+            $("#empresaNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_coligada} - ${data.des_empresa}`);
+
+            setTimeout(() => {
+                $("#ccustoNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_obra} - ${data.des_centro_custo}`);
+                $("#clienteNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_cfo} - ${data.cnpj_cliente} - ${data.des_cliente}`);
+                $("#regionalNovoCentroDeCusto")[0].selectize.setValue(data.des_regiao);
+            }, 1000);
+
+            $("#numeroContratoNovoCentroDeCusto").val(data.des_contrato);
+            $("#objetoContratoNovoCentroDeCusto").val(data.des_objeto_contrato);
+
+            $("#segmentoNovoCentroDeCusto").val(data.des_segmento);
+            $("#setorNovoCentroDeCusto").val(data.des_setor);
+            $("#tipoObraNovoCentroDeCusto").val(data.des_tipo_segmento);
+
+            $("#coordenadorNovoCentroDeCusto")[0].selectize.setValue(data.des_coordenacao);
+            $("#liderContratoNovoCentroDeCusto")[0].selectize.setValue(data.des_lider_contrato);
+            $("#chefeEscritorioNovoCentroDeCusto")[0].selectize.setValue(data.des_chefe_escritorio);
+
+            $("#inicioObraNovoCentroDeCusto").val(formataDateToDDMMAAAA(data.dt_ordem_inicio));
+            if (data.dt_termino_obra) {
+                $("#terminoObraNovoCentroDeCusto").val(formataDateToDDMMAAAA(data.dt_termino_obra));
+            }
+            $("#prazoContratualNovoCentroDeCusto").val(data.qt_prazo_contratual + " Dias");
+            $("#terminoContratualNovoCentroDeCusto").val(formataDateToDDMMAAAA(data.dt_termino_contratual));
+
+            $("#percentualCastilhoNovoCentroDeCusto").val(parseFloat(data.per_castilho).toFixed(10) + " %");
+            $("#metaResultadoNovoCentroDeCusto").val(parseFloat(data.per_meta_resultado).toFixed(10) + " %");
+
+            var options = $("#ufNovoCentroDeCusto")[0].selectize.options;
+            for (const key in options) {
+                if (!Object.hasOwn(options, key)) continue;
+
+                if (key.split(" - ")[1] == data.des_uf) {
+                    $("#ufNovoCentroDeCusto")[0].selectize.setValue(key);
+                }
+            }
+
+            setTimeout(() => {
+                $("#cidadeNovoCentroDeCusto")[0].selectize.setValue(data.des_cidade);
+            }, 1000);
+
+            if (data.st_consorcio == true) {
+                $("#checkboxConsorcio").attr("checked", "checked");
+                $("#checkboxConsorcio").trigger("change");
+
+                $("#descricaoConsorcio").val(data.des_consorcio);
+            }
+        }, 1000);
+
+    }
+    function setReadonly(){
+        $("#empresaNovoCentroDeCusto")[0].selectize.lock();
+        $("#ccustoNovoCentroDeCusto")[0].selectize.lock();
+        $("#clienteNovoCentroDeCusto")[0].selectize.lock();
+        
+        $("#numeroContratoNovoCentroDeCusto").attr("readonly","readonly");
+        $("#objetoContratoNovoCentroDeCusto").attr("readonly","readonly");
+        
+        $("#segmentoNovoCentroDeCusto").attr("readonly","readonly");
+        $("#setorNovoCentroDeCusto").attr("readonly","readonly");
+        $("#tipoObraNovoCentroDeCusto").attr("readonly","readonly");
+        
+        $("#regionalNovoCentroDeCusto")[0].selectize.lock();
+        $("#coordenadorNovoCentroDeCusto")[0].selectize.lock();
+        $("#liderContratoNovoCentroDeCusto")[0].selectize.lock();
+        $("#chefeEscritorioNovoCentroDeCusto")[0].selectize.lock();
+
+        $("#inicioObraNovoCentroDeCusto").attr("readonly","readonly");
+        $("#terminoObraNovoCentroDeCusto").attr("readonly","readonly");
+        $("#prazoContratualNovoCentroDeCusto").attr("readonly","readonly");
+        
+        
+        $("#percentualCastilhoNovoCentroDeCusto").attr("readonly","readonly");
+        $("#metaResultadoNovoCentroDeCusto").attr("readonly","readonly");
+
+        $("#ufNovoCentroDeCusto")[0].selectize.lock();
+        $("#cidadeNovoCentroDeCusto")[0].selectize.lock();
+
+
+        $("#checkboxConsorcio").attr("disabled","disabled");
+        
+        $("#descricaoConsorcio").attr("readonly","readonly");
+        $("#statusConsorcio").attr("readonly","readonly");
     }
 
     async function atualizaListaEmpresas() {
@@ -596,9 +721,10 @@ function abreModalCentroDeCusto(data, readonly) {
     async function atualizaListaClientes() {
         try {
             var clientes = await promiseConsultaClientes();
-            $("#clienteNovoCentroDeCusto")[0].selectize.addOption(clientes.map(e => { 
+            $("#clienteNovoCentroDeCusto")[0].selectize.addOption(clientes.map(e => {
                 var cliente = `${e.CGCCFO} - ${e.NOMEFANTASIA}`;
-                return { value: `${e.CODCFO} - ${cliente}`, text: cliente } }));            
+                return { value: `${e.CODCFO} - ${cliente}`, text: cliente }
+            }));
         } catch (error) {
             throw error;
         }
@@ -607,21 +733,21 @@ function abreModalCentroDeCusto(data, readonly) {
     async function atualizaListaRegionais(CODCOLIGADA) {
         try {
             var regionais = await promiseConsultaRegionais(CODCOLIGADA);
-            $("#regionalNovoCentroDeCusto")[0].selectize.addOption(regionais.map(e => { 
-                return { value: e.NOME, text: e.NOME } 
-            }));            
+            $("#regionalNovoCentroDeCusto")[0].selectize.addOption(regionais.map(e => {
+                return { value: e.NOME, text: e.NOME }
+            }));
         } catch (error) {
             throw error;
         }
 
     }
 }
-function calculaDataTerminoContratual(){
+function calculaDataTerminoContratual() {
     try {
         var dataInicio = $("#inicioObraNovoCentroDeCusto").val().split("/").reverse().join("-");
         var dataInicio = moment(dataInicio);
 
-        var prazoTerminoEmDias = parseInt($("#prazoContratualNovoCentroDeCusto").val().replace("Dias","").split(".").join("").trim());
+        var prazoTerminoEmDias = parseInt($("#prazoContratualNovoCentroDeCusto").val().replace("Dias", "").split(".").join("").trim());
         var dataTermino = dataInicio.add(prazoTerminoEmDias, "days").format("YYYY-MM-DD");
 
         return dataTermino;
@@ -633,8 +759,8 @@ function calculaDataTerminoContratual(){
 
 
 // CRUD
-function insereNovoCentroDeCusto(){
-    return new Promise((resolve, reject)=>{
+function createOuUpdateNovoCentroDeCusto(ACTION) {
+    return new Promise((resolve, reject) => {
         var [CODCOLIGADA, NOMECOLIGADA] = $("#empresaNovoCentroDeCusto").val().split(" - ");
         var [CODCCUSTO, CCUSTO] = $("#ccustoNovoCentroDeCusto").val().split(" - ");
         var [CODCFO, CGCCFO, NOMECLIENTE] = $("#clienteNovoCentroDeCusto").val().split(" - ");
@@ -652,27 +778,27 @@ function insereNovoCentroDeCusto(){
 
         var DATA_INICIO_OBRA = $("#inicioObraNovoCentroDeCusto").val().split("/").reverse().join("-");
         var DATA_TERMINO_OBRA = $("#terminoObraNovoCentroDeCusto").val().split("/").reverse().join("-");
-        var PRAZO_OBRA_EM_DIAS = $("#prazoContratualNovoCentroDeCusto").val().replace("Dias","").trim();
+        var PRAZO_OBRA_EM_DIAS = $("#prazoContratualNovoCentroDeCusto").val().replace("Dias", "").trim();
         var DATA_TERMINO_CONTRATUAL = $("#terminoContratualNovoCentroDeCusto").val().split("/").reverse().join("-");
 
-        var PERCENTUAL_CASTILHO = $("#percentualCastilhoNovoCentroDeCusto").val().replace("%","").trim()/100;
-        var META_RESULTADO = $("#metaResultadoNovoCentroDeCusto").val().replace("%","").trim()/100;
-        
+        var PERCENTUAL_CASTILHO = $("#percentualCastilhoNovoCentroDeCusto").val().replace("%", "").trim() / 100;
+        var META_RESULTADO = $("#metaResultadoNovoCentroDeCusto").val().replace("%", "").trim() / 100;
+
         var [ID, UF] = $("#ufNovoCentroDeCusto").val().split(" - ");
         var CIDADE = $("#cidadeNovoCentroDeCusto").val();
 
         var IS_CONSORCIO = $("#checkboxConsorcio").is(":checked");
-        
+
         if (IS_CONSORCIO) {
             var DESCRICAO_CONSORCIO = $("#descricaoConsorcio").val();
             var STATUS_CONSORCIO = "true";
-        }else{
-            var DESCRICAO_CONSORCIO ="";
+        } else {
+            var DESCRICAO_CONSORCIO = "";
             var STATUS_CONSORCIO = "false";
         }
 
         var constraints = [
-            DatasetFactory.createConstraint("ACTION", "UPDATE", "UPDATE", ConstraintType.MUST),
+            DatasetFactory.createConstraint("ACTION", ACTION, ACTION, ConstraintType.MUST),
             DatasetFactory.createConstraint("CODCOLIGADA", CODCOLIGADA, CODCOLIGADA, ConstraintType.MUST),
             DatasetFactory.createConstraint("NOMECOLIGADA", NOMECOLIGADA, NOMECOLIGADA, ConstraintType.MUST),
             DatasetFactory.createConstraint("CODCCUSTO", CODCCUSTO, CODCCUSTO, ConstraintType.MUST),
@@ -702,8 +828,16 @@ function insereNovoCentroDeCusto(){
             DatasetFactory.createConstraint("STATUS_CONSORCIO", STATUS_CONSORCIO, STATUS_CONSORCIO, ConstraintType.MUST),
         ];
 
-        DatasetFactory.getDataset("dsCadastroCentroDeCustoBigQuery",null,constraints,null,{
-            success:ds=>{
+        if (ACTION == "UPDATE") {   
+            var PKCODCOLIGADA  = $("#hiddenCODCOLIGADA").val();
+            var PKCODCCUSTO  = $("#hiddenCODCCUSTO").val();
+
+            constraints.push(DatasetFactory.createConstraint("PKCODCOLIGADA",PKCODCOLIGADA,PKCODCOLIGADA,ConstraintType.MUST));
+            constraints.push(DatasetFactory.createConstraint("PKCODCCUSTO",PKCODCCUSTO,PKCODCCUSTO,ConstraintType.MUST));
+        }
+
+        DatasetFactory.getDataset("dsCadastroCentroDeCustoBigQuery", null, constraints, null, {
+            success: ds => {
                 var STATUS = ds.values[0].STATUS;
                 if (STATUS != "SUCCESS") {
                     reject(ds.values[0].MENSAGEM);
@@ -711,7 +845,7 @@ function insereNovoCentroDeCusto(){
 
                 resolve(true);
             },
-            error:e=>{
+            error: e => {
                 reject(e);
             }
         });
@@ -842,10 +976,10 @@ function promiseConsultaCCusto(CODCOLIGADA) {
         });
     });
 }
-function promiseConsultaClientes(){
-    return new Promise((resolve, reject)=>{
-        DatasetFactory.getDataset("dsConsultaClientes", null, null, null,{
-            success:ds=>{
+function promiseConsultaClientes() {
+    return new Promise((resolve, reject) => {
+        DatasetFactory.getDataset("dsConsultaClientes", null, null, null, {
+            success: ds => {
                 var status = ds.values[0].STATUS;
                 if (status != "SUCCESS") {
                     showMessage("Erro ao consultar Clientes", e, "warning");
@@ -854,7 +988,7 @@ function promiseConsultaClientes(){
                 }
 
                 resolve(JSON.parse(ds.values[0].RESULT));
-            },error:e=>{
+            }, error: e => {
                 showMessage("Erro ao consultar Clientes", e, "warning");
                 log.error(e);
                 reject(e);
@@ -862,12 +996,12 @@ function promiseConsultaClientes(){
         });
     });
 }
-function promiseConsultaRegionais(CODCOLIGADA){
-     return new Promise((resolve, reject)=>{
+function promiseConsultaRegionais(CODCOLIGADA) {
+    return new Promise((resolve, reject) => {
         DatasetFactory.getDataset("dsConsultaRegionais", null, [
-            DatasetFactory.createConstraint("CODCOLIGADA",CODCOLIGADA,CODCOLIGADA,ConstraintType.MUST)
-        ], null,{
-            success:ds=>{
+            DatasetFactory.createConstraint("CODCOLIGADA", CODCOLIGADA, CODCOLIGADA, ConstraintType.MUST)
+        ], null, {
+            success: ds => {
                 var status = ds.values[0].STATUS;
                 if (status != "SUCCESS") {
                     showMessage("Erro ao consultar Regionais", e, "warning");
@@ -876,7 +1010,7 @@ function promiseConsultaRegionais(CODCOLIGADA){
                 }
 
                 resolve(JSON.parse(ds.values[0].RESULT));
-            },error:e=>{
+            }, error: e => {
                 showMessage("Erro ao consultar Regionais", e, "warning");
                 log.error(e);
                 reject(e);

@@ -106,15 +106,6 @@
                             <label for="filtroCoordenador">Coordenador</label>
                             <select name="filtroCoordenador" id="filtroCoordenador"></select>
                         </div>
-                        <div class="col-md-3">
-                            <label for="filtroStatus">Status</label>
-                            <select name="filtroStatus" id="filtroStatus" class="form-control">
-                                <option value="Ativo">Ativo</option>
-                                <option value="Paralisado">Paralisado</option>
-                                <option value="Encerrado">Encerrado</option>
-                                <option value="Todos">Todos</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
             </div>

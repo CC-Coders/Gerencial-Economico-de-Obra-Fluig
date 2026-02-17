@@ -21,3 +21,15 @@
     border-top: 0px !important;
     border-bottom: 3px var(--colorCastilho) solid !important;
 }
+
+
+select[readonly], input[readonly] {
+  background: #eee;
+  pointer-events: none;
+  touch-action: none;
+}
+
+select[readonly] option,
+select[readonly] optgroup{
+    display:none;
+}
