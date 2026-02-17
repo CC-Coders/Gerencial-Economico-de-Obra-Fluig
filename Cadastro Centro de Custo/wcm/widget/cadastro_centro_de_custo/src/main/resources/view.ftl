@@ -107,6 +107,10 @@
                             <select name="filtroCoordenador" id="filtroCoordenador"></select>
                         </div>
                     </div>
+                    <br>
+                    <div style="text-align: center;">
+                        <button class="btn btn-success" id="btnBuscarCCusto">Buscar</button>
+                    </div>
                 </div>
             </div>
 
@@ -123,6 +127,7 @@
                         <th>OBJETO DO CONTRATO</th>
                         <th>COORDENADOR</th>
                         <th>REGIONAL</th>
+                        <th>ESTADO</th>
                         <th>SETOR</th>
                         <th>SEGMENTO</th>
                         <th>PERCENT RESULTADO</th>
