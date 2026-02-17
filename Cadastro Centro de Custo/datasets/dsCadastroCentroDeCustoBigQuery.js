@@ -8,15 +8,20 @@ function createDataset(fields, constraints, sortFields) {
             return returnDataset("SUCCESS", "", JSON.stringify(retorno));
         }
         else if (constraints.ACTION == "UPDATE") {
-            var retorno  = criaCentroDeCusto(constraints);
+            var retorno = updateCentroDeCusto(constraints);
             if (retorno) {
                 return returnDataset("SUCCESS", "", JSON.stringify(retorno));
-            }else{
+            } else {
                 return returnDataset("ERROR", "", retorno);
             }
         }
         else if (constraints.ACTION == "CREATE") {
-
+            var retorno = criaCentroDeCusto(constraints);
+            if (retorno) {
+                return returnDataset("SUCCESS", "", JSON.stringify(retorno));
+            } else {
+                return returnDataset("ERROR", "", retorno);
+            }
         }
         else if (constraints.ACTION == "DELETE") {
             throw "ACTION DELETE não implementado.";
@@ -73,8 +78,8 @@ function buscaCentrosDeCusto(constraints) {
 function criaCentroDeCusto(constraints) {
     try {
         var columns = getColumnFromContraints(constraints);
-        var query = "INSERT INTO etl-castilho.dev.cadastro_centros_custo (" + getColumns(columns) +") VALUES (" + getValues(columns) + ")";
-        
+        var query = "INSERT INTO etl-castilho.dev.cadastro_centros_custo (" + getColumns(columns) + ") VALUES (" + getValues(columns) + ")";
+
         log.info("dsCadastroCentroDeCustoBigQuery - criaCentroDeCusto - query: " + query);
 
         var retorno = executaQueryNoBigQuery(query);
@@ -105,7 +110,7 @@ function criaCentroDeCusto(constraints) {
             }
         }
 
-        retorno = retorno.substring(0, retorno.length-2);
+        retorno = retorno.substring(0, retorno.length - 2);
         return retorno;
     }
     function getColumns(columns) {
@@ -116,60 +121,103 @@ function criaCentroDeCusto(constraints) {
             retorno += campo.column + ", ";
         }
 
-        retorno = retorno.substring(0, retorno.length-2);
+        retorno = retorno.substring(0, retorno.length - 2);
         return retorno;
     }
-    function getColumnFromContraints(constraints) {
-        var columns = [
-            { type: "int", column: "cod_coligada", value: constraints.CODCOLIGADA },
-            { type: "string", column: "des_empresa", value: constraints.NOMECOLIGADA },
-            { type: "string", column: "cod_obra", value: constraints.CODCCUSTO },
-            { type: "string", column: "des_centro_custo", value: constraints.CCUSTO },
-            { type: "string", column: "des_objeto_contrato", value: constraints.OBJETOCONTRATO },
-            { type: "string", column: "des_contrato", value: constraints.NUMEROCONTRATO },
 
-            // CLIENTE
-            { type: "string", column: "cod_cfo", value: constraints.CODCFO },
-            { type: "string", column: "cnpj_cliente", value: constraints.CGCCFO },
-            { type: "string", column: "des_cliente", value: constraints.NOMECLIENTE },
+}
+function updateCentroDeCusto(constraints) {
+    try {
+        var columns = getColumnFromContraints(constraints);
 
-            // OBRA
-            { type: "string", column: "des_setor", value: constraints.SETOR },
-            { type: "string", column: "des_segmento", value: constraints.SEGMENTO },
-            { type: "string", column: "des_tipo_segmento", value: constraints.TIPO_OBRA },
-            { type: "string", column: "des_regiao", value: constraints.REGIONAL },
-            { type: "string", column: "des_coordenacao", value: constraints.COORDENADOR },
-            { type: "string", column: "des_lider_contrato", value: constraints.ENGEHEIRO },
-            { type: "string", column: "des_chefe_escritorio", value: constraints.CHEFE_ESCRITORIO },
-            { type: "string", column: "des_uf", value: constraints.UF },
-            { type: "string", column: "des_cidade", value: constraints.CIDADE },
+        var query = "UPDATE etl-castilho.dev.cadastro_centros_custo ";
+        query += " SET " + getSetColumns(columns);
+        query += " WHERE cod_coligada = " + constraints.PKCODCOLIGADA;
+        query += " AND  cod_obra = '" + constraints.PKCODCCUSTO + "'";
 
-            // Datas
-            { type: "string", column: "dt_ordem_inicio", value: constraints.DATA_INICIO_OBRA },
-            { type: "int", column: "qt_prazo_contratual", value: constraints.PRAZO_OBRA_EM_DIAS },
-            { type: "string", column: "dt_termino_contratual", value: constraints.DATA_TERMINO_CONTRATUAL },
+        var retorno = executaQueryNoBigQuery(query);
+        return retorno;
+    } catch (error) {
+        throw error;
+    }
 
-            // RESULTADO
-            { type: "float", column: "per_meta_resultado", value: constraints.META_RESULTADO },
-            { type: "float", column: "per_castilho", value: constraints.PERCENTUAL_CASTILHO },
+    function getSetColumns(columns) {
+        var retorno = "";
 
-            // Consorcio
-            { type: "bool", column: "st_consorcio", value: constraints.STATUS_CONSORCIO},
-            { type: "string", column: "des_consorcio", value: constraints.DESCRICAO_CONSORCIO },
+        for (var i = 0; i < columns.length; i++) {
+            var campo = columns[i];
 
-            // UPDATE
-            { type: "string", column: "dt_ultima_alteracao", value: getDateNow() },
-            { type: "string", column: "user_ultima_alteracao", value: getValue("WKUser") },
-        ];
-
-        if (constraints.DATA_TERMINO_OBRA && constraints.DATA_TERMINO_OBRA != "") {
-           columns.push({ type: "string", column: "dt_termino_obra", value: constraints.DATA_TERMINO_OBRA });
+            if (campo.type == "int") {
+                retorno += campo.column + " = " + campo.value + ", ";
+            }
+            else if (campo.type == "float") {
+                retorno += campo.column + " = " + campo.value + ", ";
+            }
+            else if (campo.type == "bool") {
+                retorno += campo.column + " = " + campo.value + ", ";
+            }
+            else if (campo.type == "string") {
+                retorno += campo.column + " = '" + campo.value + "', ";
+            } else {
+                retorno += campo.column + " = '" + campo.value + "', ";
+            }
         }
 
-        return columns;
+        retorno = retorno.substring(0, retorno.length - 2);
+        return retorno;
     }
 }
 
+
+function getColumnFromContraints(constraints) {
+    var columns = [
+        { type: "int", column: "cod_coligada", value: constraints.CODCOLIGADA },
+        { type: "string", column: "des_empresa", value: constraints.NOMECOLIGADA },
+        { type: "string", column: "cod_obra", value: constraints.CODCCUSTO },
+        { type: "string", column: "des_centro_custo", value: constraints.CCUSTO },
+        { type: "string", column: "des_objeto_contrato", value: constraints.OBJETOCONTRATO },
+        { type: "string", column: "des_contrato", value: constraints.NUMEROCONTRATO },
+
+        // CLIENTE
+        { type: "string", column: "cod_cfo", value: constraints.CODCFO },
+        { type: "string", column: "cnpj_cliente", value: constraints.CGCCFO },
+        { type: "string", column: "des_cliente", value: constraints.NOMECLIENTE },
+
+        // OBRA
+        { type: "string", column: "des_setor", value: constraints.SETOR },
+        { type: "string", column: "des_segmento", value: constraints.SEGMENTO },
+        { type: "string", column: "des_tipo_segmento", value: constraints.TIPO_OBRA },
+        { type: "string", column: "des_regiao", value: constraints.REGIONAL },
+        { type: "string", column: "des_coordenacao", value: constraints.COORDENADOR },
+        { type: "string", column: "des_lider_contrato", value: constraints.ENGEHEIRO },
+        { type: "string", column: "des_chefe_escritorio", value: constraints.CHEFE_ESCRITORIO },
+        { type: "string", column: "des_uf", value: constraints.UF },
+        { type: "string", column: "des_cidade", value: constraints.CIDADE },
+
+        // Datas
+        { type: "string", column: "dt_ordem_inicio", value: constraints.DATA_INICIO_OBRA },
+        { type: "int", column: "qt_prazo_contratual", value: constraints.PRAZO_OBRA_EM_DIAS },
+        { type: "string", column: "dt_termino_contratual", value: constraints.DATA_TERMINO_CONTRATUAL },
+
+        // RESULTADO
+        { type: "float", column: "per_meta_resultado", value: constraints.META_RESULTADO },
+        { type: "float", column: "per_castilho", value: constraints.PERCENTUAL_CASTILHO },
+
+        // Consorcio
+        { type: "bool", column: "st_consorcio", value: constraints.STATUS_CONSORCIO },
+        { type: "string", column: "des_consorcio", value: constraints.DESCRICAO_CONSORCIO },
+
+        // UPDATE
+        { type: "string", column: "dt_ultima_alteracao", value: getDateNow() },
+        { type: "string", column: "user_ultima_alteracao", value: getValue("WKUser") },
+    ];
+
+    if (constraints.DATA_TERMINO_OBRA && constraints.DATA_TERMINO_OBRA != "") {
+        columns.push({ type: "string", column: "dt_termino_obra", value: constraints.DATA_TERMINO_OBRA });
+    }
+
+    return columns;
+}
 
 
 
