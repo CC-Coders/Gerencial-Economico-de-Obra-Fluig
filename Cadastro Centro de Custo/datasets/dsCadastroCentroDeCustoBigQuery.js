@@ -56,13 +56,20 @@ function buscaCentrosDeCusto(constraints) {
         for (var i = 0; i < filtros.length; i++) {
             var filtro = filtros[i];
 
-            if (filtro.LIKE_SEARCH == "true") {
-                query += " AND " + filtro.column + " like '" + filtro + "'";
+            if (filtro.LIKE_SEARCH == true) {
+                if (filtro.type == "int") {
+                    query += " AND UPPER(" + filtro.column + ") like UPPER(" + filtro.value + ")";
+                } else {
+                    query += " AND UPPER(" + filtro.column + ") like UPPER('" + filtro.value + "')";
+                }
             }
             else {
-                query += " AND " + filtro.column + " = '" + filtro + "'";
+                if (filtro.type == "int") {
+                    query += " AND " + filtro.column + " = " + filtro.value;
+                } else {
+                    query += " AND " + filtro.column + " = '" + filtro.value + "'";
+                }
             }
-
         }
 
 
@@ -177,6 +184,7 @@ function getColumnFromContraints(constraints) {
         { type: "string", column: "des_centro_custo", value: constraints.CCUSTO },
         { type: "string", column: "des_objeto_contrato", value: constraints.OBJETOCONTRATO },
         { type: "string", column: "des_contrato", value: constraints.NUMEROCONTRATO },
+        { type: "int", column: "idprj", value: constraints.IDPRJ },
 
         // CLIENTE
         { type: "string", column: "cod_cfo", value: constraints.CODCFO },
