@@ -1177,7 +1177,7 @@ function promiseConsultaColigadas() {
                 resolve(result.map(e => {
                     return {
                         CODCOLIGADA: e.CODCOLIGADA,
-                        NOME: e.NOME,
+                        NOME: e.NOMEFANTASIA,
                     }
                 }));
             }
