@@ -1,0 +1,20 @@
+.selectize-dropdown .active:not(.selected){
+    background-color: lightgray !important;
+    color: black !important;
+}
+.selectize-dropdown .selected{
+    background-color: lightgray !important;
+    color: black !important;
+}
+.selectize-control.single .selectize-input:not(.locked){
+    box-shadow: rgba(0, 0, 0, 0.0) !important;
+    background-color: #F7F8FA !important;
+    background-image: none !important;
+    height: var(--form-control-height);
+}
+.selectize-input.locked{
+    background-color: #F7F8FA !important;
+    box-shadow: rgba(0, 0, 0, 0.0) !important;
+    background-image: none !important;
+    height: var(--form-control-height);
+}
