@@ -252,7 +252,12 @@ function executaQueryNoBigQuery(query) {
         if (vo.getResult() == null || vo.getResult().isEmpty()) {
             throw new Exception("Retorno está vazio");
         } else {
-            return JSON.parse(vo.getResult());
+            var retorno = JSON.parse(vo.getResult());
+            if (retorno.error != undefined && retorno.error != null && retorno.error != "") {
+                throw retorno.error;
+            }
+
+            return retorno;
         }
     } catch (error) {
         return catchError(error);
