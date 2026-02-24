@@ -33,3 +33,8 @@ select[readonly] option,
 select[readonly] optgroup{
     display:none;
 }
+
+label.required::after {
+  content: " *";
+  color: #c00;
+}

@@ -46,6 +46,9 @@ datatablesLanguage = {
 };
 
 
+
+
+
 function init() {
     initFiltros();
     initDatatableCentrosDeCusto();
@@ -58,6 +61,44 @@ function init() {
     $("#btnBuscarCCusto").on("click", function () {
         atualizaDatatableCentrosDeCusto();
     });
+
+    $.fn.maskPercentual = function (options) {
+        $(this).mask("99,9999999999");
+
+        $(this).on("keyup, keydown", function () {
+            var value = $(this).val();
+            value = valueToFloat(value);
+            if (value > 100 ** value < -100) {
+                showMessage("Não é possível valores além de 100%");
+                $(this).val("");
+            }
+        });
+
+        $(this).on("blur", function () {
+            var value = $(this).val();
+            value = valueToFloat(value).toFixed(options.precision);
+            $(this).val(value.replace(".",",") + " %");
+        });
+        $(this).on("focus", function () {
+            var value = $(this).val();
+            value = value.replace("%", "").trim();
+            $(this).val(value);
+        });
+
+        function valueToFloat(value) {
+            value = value.replace("%", "").replace(",", ".").replace(" ", "").trim();
+            return parseFloat(value);
+        }
+        function floatToValue(value, precision) {
+            if (precision) {
+                value = parseFloat(value);
+                value = precision.toFixed(precision);
+            }
+
+            value = value.toString().replace(".", ",") + " %";
+            return value;
+        }
+    }
 }
 
 // Filtros
@@ -98,7 +139,9 @@ function consultaClientes() {
 function initDatatableCentrosDeCusto() {
     try {
         dataTableCentrosDeCusto = new DataTable('#tableCentrosDeCusto', {
-            colReorder: true,
+            colReorder: {
+                columns: ':not(:last-child)'
+            },
             fixedColumns: true,
             fixedHeader: true,
             columns: [
@@ -192,14 +235,27 @@ function initDatatableCentrosDeCusto() {
                 var row = dataTableCentrosDeCusto.row(tr);
                 var data = row.data();
                 abreModalCentroDeCusto(data, true);
-
             });
             $(".btnEditCCusto").off("click").on("click", function () {
                 var tr = $(this).closest('tr');
                 var row = dataTableCentrosDeCusto.row(tr);
                 var data = row.data();
                 abreModalCentroDeCusto(data, false);
+            });
+        });
 
+        dataTableCentrosDeCusto.on('columns-reordered-dropped', function (e, details) {
+            $(".btnViewCCusto").off("click").on("click", function () {
+                var tr = $(this).closest('tr');
+                var row = dataTableCentrosDeCusto.row(tr);
+                var data = row.data();
+                abreModalCentroDeCusto(data, true);
+            });
+            $(".btnEditCCusto").off("click").on("click", function () {
+                var tr = $(this).closest('tr');
+                var row = dataTableCentrosDeCusto.row(tr);
+                var data = row.data();
+                abreModalCentroDeCusto(data, false);
             });
         });
 
@@ -209,8 +265,8 @@ function initDatatableCentrosDeCusto() {
 }
 async function atualizaDatatableCentrosDeCusto() {
     try {
-        var dados = await promiseConsultaCentrosDeCusto();
         dataTableCentrosDeCusto.clear().draw();
+        var dados = await promiseConsultaCentrosDeCusto();
         dataTableCentrosDeCusto.rows.add(dados);
         dataTableCentrosDeCusto.columns.adjust().draw();
     } catch (error) {
@@ -304,21 +360,42 @@ function abreModalCentroDeCusto(data, readonly) {
             $("[data-salvar]").on("click", async function () {
                 try {
                     var valida = validaPreenchimentoDoCadastroDeCCusto();
-                    if (valida.length>0) {
-                        throw  valida.map(e=>`<li>${e}</li>`).join("");
-                    }else{
+                    if (valida.length > 0) {
+                        throw valida.map(e => `<li>${e}</li>`).join("");
+                    } else {
+                        var myLoading2 = FLUIGC.loading(window, {
+                            title: "Carregando...",
+                            title: null,
+                            overlayCSS: {
+                                backgroundColor: '#000',
+                                opacity: 0.6,
+                                cursor: 'wait'
+                            },
+                            cursorReset: 'default',
+                            centerX: true,
+                            centerY: true,
+                            bindEvents: true,
+                            fadeIn: 200,
+                            fadeOut: 400,
+                            timeout: 0,
+                            ignoreIfBlocked: false
+                        });
+                        myLoading2.show();
                         var ACTION = data ? "UPDATE" : "CREATE";
                         var retorno = await createOuUpdateNovoCentroDeCusto(ACTION);
                         if (retorno === true) {
                             showMessage("Centro de Custo atualizado!", "", "success");
+                            atualizaDatatableCentrosDeCusto();
                             myModal.remove();
-                        }else{
+                        } else {
                             showMessage("Erro ao cadastrar Centro de Custo", retorno, "warning");
                         }
                     }
 
                 } catch (error) {
                     showMessage("Erro ao cadastrar Centro de Custo", error, "warning");
+                } finally {
+                    myLoading2.hide();
                 }
             });
         }
@@ -341,27 +418,27 @@ function abreModalCentroDeCusto(data, readonly) {
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <label>Empresa</label>
+                    <label class="required">Empresa</label>
                     <select id="empresaNovoCentroDeCusto"></select>
                 </div>
                 <div class="col-md-6">
-                    <label>Centro de Custo</label>
+                    <label class="required">Obra</label>
                     <select id="ccustoNovoCentroDeCusto"></select>
                 </div>
                 <div class="col-md-6">
-                    <label>Cliente</label>
+                    <label class="required">Cliente</label>
                     <select id="clienteNovoCentroDeCusto"></select>
                 </div>
                 <div class="col-md-6">
-                    <label>Nº do Contrato</label>
+                    <label class="required">Nº do Contrato</label>
                     <input type="text" class="form-control" id="numeroContratoNovoCentroDeCusto">
                 </div>
                 <div class="col-md-12">
-                    <label>Projeto</label>
+                    <label class="required">Projeto</label>
                     <select id="projetoNovoCentroDeCusto"></select>
                 </div>
                 <div class="col-md-12">
-                    <label>Objeto do Contrato</label>
+                    <label class="required">Objeto do Contrato</label>
                     <textarea class="form-control" rows=3 id="objetoContratoNovoCentroDeCusto"></textarea>                    
                 </div>
             </div>`;
@@ -376,7 +453,7 @@ function abreModalCentroDeCusto(data, readonly) {
         </div>
         <div class="row">
             <div class="col-md-4">
-                <label>Segmento</label>
+                <label class="required">Segmento</label>
                 <select id="segmentoNovoCentroDeCusto" class="form-control">
                     <option></option>
                     <option value="Rodovia">Rodovia</option>
@@ -384,7 +461,7 @@ function abreModalCentroDeCusto(data, readonly) {
                 </select>
             </div>
             <div class="col-md-4">
-                <label>Setor</label>
+                <label class="required">Setor</label>
                 <select id="setorNovoCentroDeCusto" class="form-control">
                     <option></option>
                     <option value="Público">Público</option>
@@ -392,7 +469,7 @@ function abreModalCentroDeCusto(data, readonly) {
                 </select>
             </div>
             <div class="col-md-4">
-                <label>Tipo de Obra</label>
+                <label class="required">Tipo de Obra</label>
                 <select id="tipoObraNovoCentroDeCusto" class="form-control">
                     <option></option>
                     <option value="Implantação">Implantação</option>
@@ -412,19 +489,19 @@ function abreModalCentroDeCusto(data, readonly) {
             </div>
             <div class="row">
                 <div class="col-md-3">
-                    <label>Regional</label>
+                    <label class="required">Regional</label>
                     <select id="regionalNovoCentroDeCusto"></select>
                 </div>
                 <div class="col-md-3">
-                    <label>Coordenador</label>
+                    <label class="required">Coordenador</label>
                     <select id="coordenadorNovoCentroDeCusto"></select>
                 </div>
                 <div class="col-md-3">
-                    <label>Líder de Contrato</label>
+                    <label class="required">Líder de Contrato</label>
                     <select id="liderContratoNovoCentroDeCusto"></select>
                 </div>
                 <div class="col-md-3">
-                    <label>Chefe de Escritório</label>
+                    <label class="required">Chefe de Escritório</label>
                     <select id="chefeEscritorioNovoCentroDeCusto"></select>
                 </div>
             </div>`;
@@ -439,11 +516,7 @@ function abreModalCentroDeCusto(data, readonly) {
         </div>
         <div class="row">
             <div class="col-md-6">
-                <label>Percentual Castilho</label>
-                <input id="percentualCastilhoNovoCentroDeCusto" class="form-control" />
-            </div>
-            <div class="col-md-6">
-                <label>Meta Resultado</label>
+                <label class="required">Meta Resultado</label>
                 <input id="metaResultadoNovoCentroDeCusto" class="form-control" />
             </div>
         </div>`;
@@ -458,11 +531,11 @@ function abreModalCentroDeCusto(data, readonly) {
         </div>
         <div class="row">
             <div class="col-md-4">
-                <label>UF</label>
+                <label class="required">UF</label>
                 <select id="ufNovoCentroDeCusto"></select>
             </div>
             <div class="col-md-8">
-                <label>Cidade</label>
+                <label class="required">Cidade</label>
                 <select id="cidadeNovoCentroDeCusto"></select>
             </div>
         </div>`;
@@ -477,7 +550,7 @@ function abreModalCentroDeCusto(data, readonly) {
         </div>
         <div class="row">
             <div class="col-md-3">
-                <label>Início da Obra</label>
+                <label class="required">Início da Obra</label>
                 <div class="form-group">
                     <div class="input-group">
                         <input id="inicioObraNovoCentroDeCusto" class="form-control" />
@@ -499,7 +572,7 @@ function abreModalCentroDeCusto(data, readonly) {
                 </div>
             </div>
             <div class="col-md-3">
-                <label>Prazo Contratual (Dias)</label>
+                <label class="required">Prazo Contratual (Dias)</label>
                 <input id="prazoContratualNovoCentroDeCusto" class="form-control" />
             </div>
             <div class="col-md-3">
@@ -524,17 +597,12 @@ function abreModalCentroDeCusto(data, readonly) {
         </div>
         <div id="divDadosConsorcio" class="row">
             <div class="col-md-6">
-                <label>Descrição do Consórcio</label>
+                <label class="required">Descrição do Consórcio</label>
                 <input type="text" class="form-control" id="descricaoConsorcio"/>
             </div>
             <div class="col-md-6">
-                <label>Status do Consórcio</label>
-                <select class="form-control" id="statusConsorcio">
-                    <option></option>
-                    <option value="Ativo">Ativo</option>
-                    <option value="Paralisado">Paralisado</option>
-                    <option value="Encerrado">Encerrado</option>
-                </select>
+                <label class="required">Percentual Castilho</label>
+                <input id="percentualCastilhoNovoCentroDeCusto" class="form-control" />
             </div>
         </div>`;
 
@@ -637,9 +705,14 @@ function abreModalCentroDeCusto(data, readonly) {
             }
         });
 
-        $("#metaResultadoNovoCentroDeCusto").maskMoney({ suffix: " %", precision: 10, reverse: true });
+        $("#metaResultadoNovoCentroDeCusto").maskPercentual({ precision: 10 });
+        $("#percentualCastilhoNovoCentroDeCusto").maskPercentual({ precision: 10 });
+
+        // $('#metaResultadoNovoCentroDeCusto').mask('00,9999999999 %');
+        // $('#percentualCastilhoNovoCentroDeCusto').mask('00,9999999999 %');
+        // $("#metaResultadoNovoCentroDeCusto").maskMoney({ suffix: " %", precision: 10, reverse: true });
+        // $("#percentualCastilhoNovoCentroDeCusto").maskMoney({ suffix: " %", precision: 10, reverse: true });
         $("#prazoContratualNovoCentroDeCusto").maskMoney({ suffix: " Dias", precision: 0, thousand: "." });
-        $("#percentualCastilhoNovoCentroDeCusto").maskMoney({ suffix: " %", precision: 10, reverse: true });
 
         atualizaListaEmpresas();
         atualizaListaCoordenadores();
@@ -657,10 +730,22 @@ function abreModalCentroDeCusto(data, readonly) {
             }
         });
 
-        $("#inicioObraNovoCentroDeCusto, #prazoContratualNovoCentroDeCusto").on("change", function () {
+        $("#inicioObraNovoCentroDeCusto, #prazoContratualNovoCentroDeCusto").on("change, blur", function () {
             var dataTerminoContratual = calculaDataTerminoContratual().split("-").reverse().join("/");
             $("#terminoContratualNovoCentroDeCusto").val(dataTerminoContratual);
         });
+
+        $("#inicioObraNovoCentroDeCusto, #terminoObraNovoCentroDeCusto").on("change, blur", function () {
+            var dataInicio = $("#inicioObraNovoCentroDeCusto").val().split("/").reverse().join("-");
+            var dataFim = $("#terminoObraNovoCentroDeCusto").val().split("/").reverse().join("-");
+
+            if (dataInicio && dataFim && dataInicio > dataFim) {
+                showMessage('A data de "Término da Obra" não pode ser maior que a data de "Início da Obra"', "", "warning");
+                $("#terminoObraNovoCentroDeCusto").val("");
+            }
+        });
+
+
 
         if (data) {
             preencheData(data);
@@ -670,8 +755,9 @@ function abreModalCentroDeCusto(data, readonly) {
             setReadonly();
         }
 
-        myLoading2.hide();
-
+        setTimeout(() => {
+            myLoading2.hide();
+        }, 500);
     }
 
     function preencheData(data) {
@@ -680,7 +766,6 @@ function abreModalCentroDeCusto(data, readonly) {
         $("#hiddenCODCCUSTO").val(data.cod_obra);
 
         $("#empresaNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_coligada} - ${data.des_empresa}`);
-
         setTimeout(() => {
             $("#ccustoNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_obra} - ${data.des_centro_custo}`);
             $("#clienteNovoCentroDeCusto")[0].selectize.setValue(`${data.cod_cfo} - ${data.cnpj_cliente} - ${data.des_cliente}`);
@@ -688,7 +773,8 @@ function abreModalCentroDeCusto(data, readonly) {
             setTimeout(() => {
                 $("#projetoNovoCentroDeCusto")[0].selectize.setValue(data.idprj);
             }, 500);
-        }, 1000);
+        }, 500);
+
 
         $("#numeroContratoNovoCentroDeCusto").val(data.des_contrato);
         $("#objetoContratoNovoCentroDeCusto").val(data.des_objeto_contrato);
@@ -722,7 +808,7 @@ function abreModalCentroDeCusto(data, readonly) {
 
         setTimeout(() => {
             $("#cidadeNovoCentroDeCusto")[0].selectize.setValue(data.des_cidade);
-        }, 1000);
+        }, 1500);
 
         if (data.st_consorcio == true) {
             $("#checkboxConsorcio").attr("checked", "checked");
@@ -765,7 +851,6 @@ function abreModalCentroDeCusto(data, readonly) {
         $("#checkboxConsorcio").attr("disabled", "disabled");
 
         $("#descricaoConsorcio").attr("readonly", "readonly");
-        $("#statusConsorcio").attr("readonly", "readonly");
     }
 
     async function atualizaListaEmpresas() {
@@ -868,6 +953,7 @@ function createOuUpdateNovoCentroDeCusto(ACTION) {
             var isCCustoCadastrado = await verificaSeExisteCadastroProCCUSTO(CODCOLIGADA, CODCCUSTO);
             if (isCCustoCadastrado.length > 0) {
                 reject("Centro de Custo já cadastrado.");
+                return;
             }
         }
 
@@ -904,6 +990,7 @@ function createOuUpdateNovoCentroDeCusto(ACTION) {
         } else {
             var DESCRICAO_CONSORCIO = "";
             var STATUS_CONSORCIO = "false";
+            var PERCENTUAL_CASTILHO = 1;
         }
 
         var constraints = [
@@ -1012,9 +1099,7 @@ function validaPreenchimentoDoCadastroDeCCusto() {
     if (!$("#terminoContratualNovoCentroDeCusto").val()) {
         retorno.push("Necessário informar o Término Contratual");
     }
-    if (!$("#percentualCastilhoNovoCentroDeCusto").val()) {
-        retorno.push("Necessário informar o Percentual Castilho");
-    }
+
     if (!$("#metaResultadoNovoCentroDeCusto").val()) {
         retorno.push("Necessário informar a Meta Resultado");
     }
@@ -1027,9 +1112,13 @@ function validaPreenchimentoDoCadastroDeCCusto() {
 
     var IS_CONSORCIO = $("#checkboxConsorcio").is(":checked");
 
-
-    if (IS_CONSORCIO && !$("#descricaoConsorcio").val()) {
-        retorno.push("Necessário informar a Descrição do Consórcio");
+    if (IS_CONSORCIO) {
+        if (!$("#descricaoConsorcio").val()) {
+            retorno.push("Necessário informar a Descrição do Consórcio");
+        }
+        if (!$("#percentualCastilhoNovoCentroDeCusto").val()) {
+            retorno.push("Necessário informar o Percentual Castilho");
+        }
     }
 
     return retorno;
@@ -1295,3 +1384,5 @@ function formataDateToAAAAMMDD(date) {
 
     return [ano, mes, dia].join("-")
 }
+
+
