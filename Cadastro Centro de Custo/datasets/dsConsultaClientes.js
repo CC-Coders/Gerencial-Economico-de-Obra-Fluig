@@ -7,7 +7,17 @@ function createDataset(fields, constraints, sortFields) {
         // PAGREC == 2 => Fornecedor
         // PAGREC == 3 => Ambos
 
-        var query = "SELECT CODCOLIGADA, CODCFO, NOMEFANTASIA, CGCCFO FROM FCFO WHERE PAGREC != 2"
+        // var query = "SELECT CODCOLIGADA, CODCFO, NOMEFANTASIA, CGCCFO FROM FCFO WHERE PAGREC != 2"
+        var query = "";
+        query += "SELECT DISTINCT ";
+        query += "FCFO.NOMEFANTASIA, FCFO.CGCCFO, FCFO.CODCFO ";
+        query += "FROM ( ";
+        query += "	SELECT * FROM View_Cas_ControleFaturamento ";
+        query += "	UNION ";
+        query += "	SELECT * FROM View_Cas_ControleFaturamentoDromos ";
+        query += "	UNION ";
+        query += "	SELECT * FROM View_Cas_ControleFaturamentoEpya) as VIEW_FATURAMENTO ";
+        query += "INNER JOIN FCFO ON VIEW_FATURAMENTO.CODCFO = FCFO.CODCFO ";
 
         var retorno = executaQuery(query,[],"/jdbc/FluigRM");
         return returnDataset("SUCCESS", "", JSON.stringify(retorno));
