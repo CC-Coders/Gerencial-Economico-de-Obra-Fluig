@@ -8,13 +8,14 @@ function createDataset(fields, constraints, sortFields) {
 
         var query = "SELECT CODCOLIGADA, IDPRJ, CODPRJ, DESCRICAO, CLASSIFICACAO, CODCCUSTO ";
         query += "FROM MPRJ ";
-        query += "WHERE CODCOLIGADA = ? AND CODCCUSTO = ? AND CLASSIFICACAO = ?";
+        query += "WHERE CODCOLIGADA = ? AND CODCCUSTO = ?";
+        // query += "WHERE CODCOLIGADA = ? AND CODCCUSTO = ? AND CLASSIFICACAO = ?";
         
 
         var retorno = executaQuery(query,[
             {type:"int",value:constraints.CODCOLIGADA},
             {type:"text",value:constraints.CODCCUSTO},
-            {type:"text",value:CLASSIFICACAO},
+            // {type:"text",value:CLASSIFICACAO},
         ],"/jdbc/FluigRM");
 
         return returnDataset("SUCCESS","",JSON.stringify(retorno));
