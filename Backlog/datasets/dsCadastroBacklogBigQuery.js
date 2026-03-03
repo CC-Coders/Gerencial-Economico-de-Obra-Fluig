@@ -56,10 +56,10 @@ function buscaBacklog(constraints) {
     try {
         var query = "SELECT BACKLOG.*,  CCUSTO.des_empresa, CCUSTO.des_centro_custo ";
         query += "FROM etl-castilho.dev.gerencial_backlog as BACKLOG ";
-        query += "INNER JOIN (SELECT cod_coligada, cod_obra, MAX(dt_base) as dt_base ";
+        query += "INNER JOIN (SELECT cod_coligada, cod_obra, MAX(dt_ultima_alteracao) as dt_ultima_alteracao ";
         query += "  FROM etl-castilho.dev.gerencial_backlog ";
         query += "  GROUP BY cod_coligada, cod_obra) as DTBASE ON  ";
-        query += "  BACKLOG.cod_coligada = DTBASE.cod_coligada AND BACKLOG.cod_obra = DTBASE.cod_obra AND BACKLOG.dt_base = DTBASE.dt_base ";
+        query += "  BACKLOG.cod_coligada = DTBASE.cod_coligada AND BACKLOG.cod_obra = DTBASE.cod_obra AND BACKLOG.dt_ultima_alteracao = DTBASE.dt_ultima_alteracao ";
         query += "INNER JOIN etl-castilho.dev.cadastro_centros_custo as CCUSTO ON ";
         query += "  BACKLOG.cod_coligada = CCUSTO.cod_coligada AND BACKLOG.cod_obra = CCUSTO.cod_obra ";
         query += "WHERE 1=1 ";
@@ -196,6 +196,7 @@ function consultaHistoricoBacklog(constraints){
         query += "INNER JOIN etl-castilho.dev.cadastro_centros_custo as CCUSTO ON ";
         query += "  BACKLOG.cod_coligada = CCUSTO.cod_coligada AND BACKLOG.cod_obra = CCUSTO.cod_obra ";
         query += "WHERE CCUSTO.cod_coligada = " + constraints.CODCOLIGADA + " AND  BACKLOG.cod_obra = '" + constraints.CODCCUSTO + "'";
+        query += "ORDER BY BACKLOG.dt_ultima_alteracao DESC";
 
         var retorno = executaQueryNoBigQuery(query);
         log.dir(retorno);
@@ -225,7 +226,7 @@ function getColumnFromContraints(constraints) {
 
 
         // UPDATE
-        { type: "date", column: "dt_ultima_alteracao", value: getDateNow() },
+        { type: "date", column: "dt_ultima_alteracao", value: getDateTimeNow() },
         { type: "string", column: "user_ultima_alteracao", value: getValue("WKUser") },
     ];
 
@@ -341,4 +342,29 @@ function getDateNow() {
 
     var dateTime = [ano, mes, dia].join("-");
     return dateTime;
+}
+function getDateTimeNow() {
+    var date = new Date();
+    var dia = date.getDate();
+    if (dia < 10) dia = "0" + dia;
+
+    var mes = date.getMonth() + 1;
+    if (mes < 10) mes = "0" + mes;
+
+    var ano = date.getFullYear();
+
+    var hora = date.getHours();
+    if (hora < 10) hora = "0" + hora;
+
+    var minutos = date.getMinutes();
+    if (minutos < 10) minutos = "0" + minutos;
+
+    var segundos = date.getSeconds();
+    if (segundos < 10) segundos = "0" + segundos;
+  
+    var milisegundos = date.getMilliseconds();
+    if (milisegundos < 10) milisegundos = "00" + milisegundos;
+    if (milisegundos < 100) milisegundos = "0" + milisegundos;
+
+    return ano + "-" + mes + "-" + dia + " " + hora + ":" + minutos + ":" + segundos;
 }
