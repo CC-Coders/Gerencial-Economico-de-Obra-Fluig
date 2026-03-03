@@ -48,8 +48,10 @@ var MyWidget = SuperWidget.extend({
 
 function init() {
     initDatatableBacklog();
-    atualizaDatatableCentrosDeCusto();
     atualizaListaEmpresas();
+    setTimeout(() => {
+        atualizaDatatableCentrosDeCusto();
+    }, 500);
 
     $("#filtroEmpresa").selectize({
         onChange: function (value) {
@@ -264,15 +266,15 @@ function abreModalNovoBacklog(data, readonly) {
             </div>
             <div class="row">
                 <div class="col-md-4">
-                   <label>Empresa</label>
+                   <label class="required">Empresa</label>
                     <select id="selectEmpresaNovoBacklog"></select>
                 </div>
                 <div class="col-md-4">
-                   <label>Obra</label>
+                   <label class="required">Obra</label>
                     <select id="selectObraNovoBacklog"></select>
                 </div>
                 <div class="col-md-4">
-                   <label>Data Base</label>
+                   <label class="required">Data Base</label>
                     <div class="form-group">
                         <div class="input-group">
                             <input id="dataBaseObraNovoBacklog" class="form-control" />
@@ -295,35 +297,35 @@ function abreModalNovoBacklog(data, readonly) {
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <label>Preço Inicial (PI)</label>
+                    <label class="required">Preço Inicial (PI)</label>
                     <input id="piNovoBacklog" type="text" class="form-control" />
                 </div>
                 <div class="col-md-6">
-                    <label>Preço Inicial (PI) Medido</label>
+                    <label class="required">Preço Inicial (PI) Medido</label>
                     <input id="piMedidoNovoBacklog" type="text" class="form-control" />
                 </div>
                 <div class="col-md-6">
-                    <label>Reajuste (R)</label>
+                    <label class="required">Reajuste (R)</label>
                     <input id="rNovoBacklog" type="text" class="form-control" />
                 </div>
                 <div class="col-md-6">
-                    <label>Reajuste (R) Medido</label>
+                    <label class="required">Reajuste (R) Medido</label>
                     <input id="rMedidoNovoBacklog" type="text" class="form-control" />
                 </div>
                 <div class="col-md-6">
-                    <label>Aditivo</label>
+                    <label class="required">Aditivo</label>
                     <input id="aditivoNovoBacklog" type="text" class="form-control" />
                 </div>
                 <div class="col-md-6">
-                    <label>Aditivo Medido</label>
+                    <label class="required">Aditivo Medido</label>
                     <input id="aditivoMedidoNovoBacklog" type="text" class="form-control" />
                 </div>
                 <div class="col-md-6">
-                    <label>Não Executável</label>
+                    <label class="required">Não Executável</label>
                     <input id="naoExecutavelNovoBacklog" type="text" class="form-control" />
                 </div>
                 <div class="col-md-6">
-                    <label>Índice de Reajuste</label>
+                    <label class="required">Índice de Reajuste</label>
                     <select class="form-control" id="indiceReajusteNovoBacklog">
                         <option></option>
                         <option value="IPCA">IPCA</option>
@@ -344,7 +346,7 @@ function abreModalNovoBacklog(data, readonly) {
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <label>Observação </label>
+                    <label class="required">Observação </label>
                     <textarea id="observaçãoNovoBacklog" rows=4 class="form-control"></textarea>
                 </div>
             </div>
@@ -363,7 +365,7 @@ function abreModalNovoBacklog(data, readonly) {
                     <table id="tableHistoricoBacklog" class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>DATA BASE</th>
+                                <th>DATA</th>
                                 <th>PREÇO INICIAL (PI)</th>
                                 <th>PI MEDIDO</th>
                                 <th>REAJUSTE (R)</th>
@@ -420,7 +422,7 @@ function abreModalNovoBacklog(data, readonly) {
                 var historicoBacklog = await promiseConsultaHistoricoBacklog(CODCOLIGADA, CODCCUSTO);
                 var ultimoBacklog = historicoBacklog[0];
 
-                preencheData(ultimoBacklog);
+                preencheData(ultimoBacklog, true);
             }
         });
 
@@ -452,18 +454,20 @@ function abreModalNovoBacklog(data, readonly) {
         }
     }
 
-    function preencheData(data) {
+    function preencheData(data, carregaSomenteHistorico) {
         console.log(data);
 
-        $("#hiddenCODCOLIGADA").val(data.cod_coligada);
-        $("#hiddenCODCCUSTO").val(data.cod_obra);
-        $("#hiddenDATABASE").val(formataDateToDDMMAAAA(data.dt_base));
-
-        $("#selectEmpresaNovoBacklog")[0].selectize.setValue(`${data.cod_coligada} - ${data.des_empresa}`);
-        setTimeout(() => {
-            $("#selectObraNovoBacklog")[0].selectize.setValue(`${data.cod_obra} - ${data.des_centro_custo}`);
-        }, 1000);
-        $("#dataBaseObraNovoBacklog").val(formataDateToDDMMAAAA(data.dt_base));
+        if (!carregaSomenteHistorico) {
+            $("#hiddenCODCOLIGADA").val(data.cod_coligada);
+            $("#hiddenCODCCUSTO").val(data.cod_obra);
+            $("#hiddenDATABASE").val(formataDateToDDMMAAAA(data.dt_base));
+    
+            $("#selectEmpresaNovoBacklog")[0].selectize.setValue(`${data.cod_coligada} - ${data.des_empresa}`);
+            setTimeout(() => {
+                $("#selectObraNovoBacklog")[0].selectize.setValue(`${data.cod_obra} - ${data.des_centro_custo}`);
+            }, 1000);
+            $("#dataBaseObraNovoBacklog").val(formataDateToDDMMAAAA(data.dt_base));
+        }
 
 
         $("#piNovoBacklog").val(floatToMoney(data.vlr_pi));
@@ -523,18 +527,31 @@ function abreModalNovoBacklog(data, readonly) {
     async function preencheHistoricoBacklog(CODCOLIGADA, CODCCUSTO) {
         try {
             var historicos = await promiseConsultaHistoricoBacklog(CODCOLIGADA, CODCCUSTO);
+            var lastData = {};//Varialvel usada para identificar quando há ou não alteração de valor entre as linhas
 
             for (const historico of historicos) {
+                var rowData = {};
+                var columns = ["vlr_pi", "vlr_pi_medido", "vlr_r", "vlr_r_medido", "vlr_aditivos", "vlr_aditivos_medido", "vlr_nao_executavel"];
+
+                for (const column of columns) {
+                    if (lastData[column] != historico[column]) {
+                        rowData[column] = floatToMoney(historico[column]);
+                        lastData[column] = historico[column];
+                    }else{
+                        rowData[column] = " - ";
+                    }
+                }
+
                 var html = `
                     <tr>
-                    <td>${formataDateToDDMMAAAA(historico.dt_base)}</td>
-                        <td>${floatToMoney(historico.vlr_pi)}</td>
-                        <td>${floatToMoney(historico.vlr_pi_medido)}</td>
-                        <td>${floatToMoney(historico.vlr_r)}</td>
-                        <td>${floatToMoney(historico.vlr_r_medido)}</td>
-                        <td>${floatToMoney(historico.vlr_aditivos)}</td>
-                        <td>${floatToMoney(historico.vlr_aditivos_medido)}</td>
-                        <td>${floatToMoney(historico.vlr_nao_executavel)}</td>
+                        <td>${formataDateToDDMMAAAA(historico.dt_ultima_alteracao)}</td>
+                        <td>${rowData.vlr_pi}</td>
+                        <td>${rowData.vlr_pi_medido}</td>
+                        <td>${rowData.vlr_r}</td>
+                        <td>${rowData.vlr_r_medido}</td>
+                        <td>${rowData.vlr_aditivos}</td>
+                        <td>${rowData.vlr_aditivos_medido}</td>
+                        <td>${rowData.vlr_nao_executavel}</td>
                     </tr>
                 `;
 
