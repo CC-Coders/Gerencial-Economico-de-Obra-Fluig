@@ -1,0 +1,36 @@
+mat-icon{
+  font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+
+.menu-item {
+  background-color: transparent;
+  color: inherit;
+  width: 100%;
+
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: #e5e7eb;
+  border-radius: 0.5rem;
+
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  margin-top: calc(0.25rem);
+  margin-bottom: calc(0.25rem);
+}
+
+.menu-item:hover {
+  background-color: rgb(55 65 81);
+}
+
+
+.menu-item.active {
+  background-color: rgb(255 205 42) !important;
+  color: black;
+}
