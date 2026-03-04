@@ -1,0 +1,9 @@
+.card {
+  padding: 1.5rem;
+  background-color: rgb(255 255 255);
+
+  border-color: rgb(229 231 235);
+  border-width: 1px;
+  border-radius: 0.5rem;
+  border-style: solid;
+}

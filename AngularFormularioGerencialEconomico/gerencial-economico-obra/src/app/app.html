@@ -3,11 +3,19 @@
 
   <div style="display: flex;">
 
-    <aside>
-      <app-menu />
+    <aside style="width: 30%;">
+      <app-menu  (selectMenu)="changeActiveMenu($event)" [activeMenu]="activeMenu" />
     </aside>
-    <main>
-      MAIN
+    <main style="width: 100%;">
+
+
+      @if(activeMenu == "Dados Gerais"){
+        <app-dados-gerais/>
+      }
+      @if(activeMenu == "Producao"){
+        <app-producao/>
+      }
+
 
     </main>    
     

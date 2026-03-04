@@ -1,18 +1,32 @@
 <div id="menu">
-    <app-menu-item ICON_NAME="info" NAME="Dados Gerais" isActive="true"/>
-    <app-menu-item ICON_NAME="engineering" NAME="Produção"/>
-    <app-menu-item ICON_NAME="attach_money" NAME="Faturamento"/>
-    <app-menu-item ICON_NAME="inventory_2" NAME="Estoque"/>
-    <app-menu-item ICON_NAME="trending_down" NAME="Desp. Econômicas"/>
-    <app-menu-item ICON_NAME="account_balance_wallet" NAME="Desp. Indiretas"/>
-    <app-menu-item ICON_NAME="groups" NAME="Efetivo"/>
-    <app-menu-item ICON_NAME="agriculture" NAME="Equipamento"/>
-    <app-menu-item ICON_NAME="savings" NAME="Prov. Desp. Econômicas"/>
-    <app-menu-item ICON_NAME="receipt_long" NAME="Imposto"/>
-    <app-menu-item ICON_NAME="security" NAME="Prevtri"/>
-    <app-menu-item ICON_NAME="handshake" NAME="Faturamento Cons."/>
-    <app-menu-item ICON_NAME="balance" NAME="Equilibrio Cons."/>
-    <app-menu-item ICON_NAME="assignment_turned_in" NAME="Compromisso"/>
-    <app-menu-item ICON_NAME="person_remove" NAME="Prov. Rescisão" />
+    <app-menu-item ICON_NAME="info" NAME="Dados Gerais" [isActive]="activeMenu == 'Dados Gerais'"
+        (click)="onSelectMenu('Dados Gerais')" />
+    <app-menu-item ICON_NAME="engineering" NAME="Produção" [isActive]="activeMenu == 'Producao'"
+        (click)="onSelectMenu('Producao')" />
+    <app-menu-item ICON_NAME="attach_money" NAME="Faturamento" [isActive]="activeMenu == 'Faturamento'"
+        (click)="onSelectMenu('Faturamento')" />
+    <app-menu-item ICON_NAME="inventory_2" NAME="Estoque" [isActive]="activeMenu == 'Estoque'"
+        (click)="onSelectMenu('Estoque')" />
+    <app-menu-item ICON_NAME="trending_down" NAME="Desp. Econômicas" [isActive]="activeMenu == 'Desp. Econômicas'"
+        (click)="onSelectMenu('Desp. Econômicas')" />
+    <app-menu-item ICON_NAME="account_balance_wallet" NAME="Desp. Indiretas" [isActive]="activeMenu == 'Desp. Indiretas'"
+        (click)="onSelectMenu('Desp. Indiretas')" />
+    <app-menu-item ICON_NAME="groups" NAME="Efetivo" [isActive]="activeMenu == 'Efetivo'"
+        (click)="onSelectMenu('Efetivo')" />
+    <app-menu-item ICON_NAME="agriculture" NAME="Equipamento" [isActive]="activeMenu == 'Equipamento'"
+        (click)="onSelectMenu('Equipamento')" />
+    <app-menu-item ICON_NAME="savings" NAME="Prov. Desp. Econômicas" [isActive]="activeMenu == 'Prov. Desp. Econômicas'"
+        (click)="onSelectMenu('Prov. Desp. Econômicas')" />
+    <app-menu-item ICON_NAME="receipt_long" NAME="Imposto" [isActive]="activeMenu == 'Imposto'"
+        (click)="onSelectMenu('Imposto')" />
+    <app-menu-item ICON_NAME="security" NAME="Prevtri" [isActive]="activeMenu == 'Prevtri'"
+        (click)="onSelectMenu('Prevtri')" />
+    <app-menu-item ICON_NAME="handshake" NAME="Faturamento Cons." [isActive]="activeMenu == 'Faturamento Cons.'"
+        (click)="onSelectMenu('Faturamento Cons.')" />
+    <app-menu-item ICON_NAME="balance" NAME="Equilibrio Cons." [isActive]="activeMenu == 'Equilibrio Cons.'"
+        (click)="onSelectMenu('Equilibrio Cons.')" />
+    <app-menu-item ICON_NAME="assignment_turned_in" NAME="Compromisso" [isActive]="activeMenu == 'Compromisso'"
+        (click)="onSelectMenu('Compromisso')" />
+    <app-menu-item ICON_NAME="person_remove" NAME="Prov. Rescisão" [isActive]="activeMenu == 'Prov. Rescisão'"
+        (click)="onSelectMenu('Prov. Rescisão')" />
 </div>
-

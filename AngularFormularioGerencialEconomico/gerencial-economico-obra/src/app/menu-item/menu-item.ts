@@ -12,5 +12,5 @@ import {MatIconModule} from '@angular/material/icon';
 export class MenuItem {
   @Input({required:true}) NAME!: string;
   @Input({required:true}) ICON_NAME!: string;
-  @Input() isActive?: string;
+  @Input() isActive?: boolean;
 }

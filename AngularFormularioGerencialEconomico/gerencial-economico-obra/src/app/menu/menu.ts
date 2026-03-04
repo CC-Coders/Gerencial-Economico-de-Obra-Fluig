@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MenuItem } from '../menu-item/menu-item';
 
 @Component({
@@ -7,4 +7,11 @@ import { MenuItem } from '../menu-item/menu-item';
   templateUrl: './menu.html',
   styleUrl: './menu.css',
 })
-export class Menu {}
+export class Menu {
+  @Output() selectMenu = new EventEmitter();
+  @Input({required:true}) activeMenu!: string;
+
+  onSelectMenu(menu:string) {
+    this.selectMenu.emit(menu);
+  }
+}
