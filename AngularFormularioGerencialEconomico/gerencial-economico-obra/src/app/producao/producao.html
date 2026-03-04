@@ -1,40 +1,54 @@
 <div id="producao">
 
-    <h1> 
-        <mat-icon style="color:#ffcd2a">engineering</mat-icon> 
-        Apontamento de Produção
+    <h1 style="display: flex; justify-content: space-between;">
+        <div>
+            <mat-icon style="color:#ffcd2a">engineering</mat-icon>
+            Apontamento de Produção
+        </div>
+        <b>Total: {{getValorTotal() | currency:"BRL"}}</b>
     </h1>
+    <button class="btn btn-primary" (click)="loadProducao()">Load</button>
 
-
-    <div class="row">
+    <div class="row" style="height: 80vh; overflow-y: scroll; margin-top: 20px;">
         <div class="col-md-12">
+            <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8" style="margin: 0px;">
 
+                <ng-container matColumnDef="Tarefa">
+                    <th mat-header-cell *matHeaderCellDef> Cód. Tarefa </th>
+                    <td mat-cell *matCellDef="let element"> {{element.cod_tarefa}} </td>
+                </ng-container>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Cód. Tarefa</th>
-                        <th>Descrição da Tarefa</th>
-                        <th>Unidade</th>
-                        <th>Valor Realizado (R$)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>001.003.001</td>
-                        <td>Regularização do subleito</td>
-                        <td>M²</td>
-                        <td><input type="text" name="" id="" class="form-control"></td>
-                    </tr>
-                    <tr>
-                        <td>001.003.002</td>
-                        <td>Varredura da superficie</td>
-                        <td>M²</td>
-                        <td><input type="text" name="" id="" class="form-control"></td>
-                    </tr>
-                </tbody>
+                <ng-container matColumnDef="descricao_tarefa">
+                    <th mat-header-cell *matHeaderCellDef> Descrição da Tarefa </th>
+                    <td mat-cell *matCellDef="let element"> {{element.descricao_tarefa}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="un_tarefa">
+                    <th mat-header-cell *matHeaderCellDef> Unidade </th>
+                    <td mat-cell *matCellDef="let element"> {{element.un_tarefa}} </td>
+                </ng-container>
+                <ng-container matColumnDef="quantidade_medida_tarefa">
+                    <th mat-header-cell *matHeaderCellDef> Quantidade Medida </th>
+                    <td mat-cell *matCellDef="let element">
+                        <input class="form-control" currencyMask [options]="{nullable: true, prefix: ' ', thousands: '.', decimal: ',', precision:2}" [(ngModel)]="element.quantidade_medida_tarefa"/>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="valor_unitario_tarefa">
+                    <th mat-header-cell *matHeaderCellDef> Valor Unitário </th>
+                    <td mat-cell *matCellDef="let element"> {{element.valor_unitario_tarefa | currency:"BRL"}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="valor_realizado_tarefa">
+                    <th mat-header-cell *matHeaderCellDef> Valor Realizado (R$) </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{element.valor_unitario_tarefa * element.quantidade_medida_tarefa | currency:"BRL"}}
+                    </td>
+                </ng-container>
+
+                <!-- Header and Data Rows -->
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-
         </div>
     </div>
 </div>

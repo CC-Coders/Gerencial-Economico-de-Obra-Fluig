@@ -1,3 +1,5 @@
 #dadosGerais{
     padding: 10px 40px;
+    height: 100vh;
+    overflow-y: scroll;
 }
