@@ -1,29 +1,93 @@
 <div id="dadosGerais">
 
     <h1> <mat-icon style="color:#ffcd2a">info</mat-icon> Dados Gerais da Obra</h1>
-    
-    
+
+
     <div class="row">
         <div class="col-md-4">
-            <app-card/>
+            <app-card title="Cliente">
+                <b style="font-size: 18px;">
+                    {{backlog?.des_cliente}}
+                </b>
+            </app-card>
         </div>
         <div class="col-md-4">
-            <app-card/>
+            <app-card title="Obra">
+                <b style="font-size: 18px;">
+                    {{backlog?.cod_obra}} - {{backlog?.des_centro_custo}}
+                </b>
+            </app-card>
         </div>
         <div class="col-md-4">
-            <app-card/>
+            <app-card title="Índice de Reajuste">
+                <b style="font-size: 18px;">
+                    {{backlog?.des_indice_reajuste}}
+                </b>
+            </app-card>
         </div>
         <div class="col-md-4">
-            <app-card/>
+            <app-card title="Coordenador">
+                <b style="font-size: 18px;">
+                    {{backlog?.des_coordenacao}}
+                </b>
+            </app-card>
         </div>
         <div class="col-md-4">
-            <app-card/>
+            <app-card title="Líder do Contrato">
+                <b style="font-size: 18px;">
+                    {{backlog?.des_lider_contrato}}
+                </b>
+            </app-card>
         </div>
         <div class="col-md-4">
-            <app-card/>
+            <app-card title="Não Executável">
+                <b style="font-size: 18px; color: red;">
+                    {{backlog?.vlr_nao_executavel | currency:"BRL"}}
+                </b>
+            </app-card>
         </div>
         <div class="col-md-4">
-            <app-card/>
+            <app-card title="Preço Inicial (PI)">
+                <b style="font-size: 18px; color:#ffcd2a;">
+                    {{backlog?.vlr_pi | currency:"BRL"}}
+                </b>
+            </app-card>
+        </div>
+        <div class="col-md-4">
+            <app-card title="Reajuste (R)">
+                <b style="font-size: 18px; color:#ffcd2a;">
+                    {{backlog?.vlr_r | currency:"BRL"}}
+                </b>
+            </app-card>
+        </div>
+        <div class="col-md-4">
+            <app-card title="Aditivos">
+                <b style="font-size: 18px; color:#ffcd2a;">
+                    {{backlog?.vlr_aditivos | currency:"BRL"}}
+                </b>
+            </app-card>
+        </div>
+        <div class="col-md-4">
+            <app-card title="Preço Inicial (PI) - Medido">
+                <b style="font-size: 18px; color: #16a34a;">
+                    {{backlog?.vlr_pi_medido | currency:"BRL"}}
+                    
+                </b>
+            </app-card>
+        </div>
+        <div class="col-md-4">
+            <app-card title="Reajuste (R) - Medido">
+                <b style="font-size: 18px;color: #16a34a">
+                    {{backlog?.vlr_r_medido | currency:"BRL"}}
+                </b>
+            </app-card>
+        </div>
+        <div class="col-md-4">
+            <app-card title="Aditivos - Medido">
+                <b style="font-size: 18px;color: #16a34a">
+                    {{backlog?.vlr_aditivos_medido | currency:"BRL"}}
+                </b>
+            </app-card>
         </div>
     </div>
 </div>
