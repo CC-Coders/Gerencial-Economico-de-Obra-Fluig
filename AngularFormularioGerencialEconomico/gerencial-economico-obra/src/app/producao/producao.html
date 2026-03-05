@@ -8,8 +8,28 @@
         <b>Total: {{getValorTotal() | currency:"BRL"}}</b>
     </h1>
     <button class="btn btn-primary" (click)="loadProducao()">Load</button>
+    <div>
+        <app-fluig-table [data]="dataSource()"
+            tablename="tableProducao"
+            [columns]="['Cod. Tarefa', 'Descrição', 'Quantidade', 'Quantidade Medida', 'Valor Unitário', 'Valor Realizado (R$)']">
 
-    <div class="row" style="height: 80vh; overflow-y: scroll; margin-top: 20px;">
+            <ng-template let-row let-i="index">
+                <tr>
+                    <td>{{row.cod_tarefa}}</td>
+                    <td>{{row.descricao_tarefa}}</td>
+                    <td>{{row.un_tarefa}}</td>
+                    <td>
+                        <input class="form-control" currencyMask [options]="{nullable: true, prefix: ' ', thousands: '.', decimal: ',', precision:2}" [(ngModel)]="row.quantidade_medida_tarefa" (ngModelChange)="updatePaiFilho()" />
+                    </td>
+                    <td>{{row.valor_unitario_tarefa | currency:"BRL"}}</td>
+                    <td>{{row.valor_unitario_tarefa * row.quantidade_medida_tarefa | currency:"BRL"}}</td>
+                </tr>
+            </ng-template>
+
+        </app-fluig-table>
+    </div>
+
+    <!-- <div class="row" style="height: 80vh; overflow-y: scroll; margin-top: 20px;">
         <div class="col-md-12">
             <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8" style="margin: 0px;">
 
@@ -45,10 +65,10 @@
                     </td>
                 </ng-container>
 
-                <!-- Header and Data Rows -->
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
         </div>
-    </div>
+    </div> -->
+
 </div>
