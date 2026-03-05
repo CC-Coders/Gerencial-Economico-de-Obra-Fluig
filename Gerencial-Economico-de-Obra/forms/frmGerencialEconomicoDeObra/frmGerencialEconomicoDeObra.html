@@ -1,26 +1,70 @@
 <html>
+
 <head>
-	<link type="text/css" rel="stylesheet" href="/style-guide/css/fluig-style-guide-flat.min.css"/>
+	<!-- Fluig -->
+	<link type="text/css" rel="stylesheet" href="/style-guide/css/fluig-style-guide-flat.min.css" />
 	<script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
 	<script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
 	<script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
+
+	<!-- Material Icon -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+	<!-- Angular -->
+	<link rel="stylesheet" href="app-angular/styles.css">
+
+	<style>
+		body{
+			padding-bottom: 0px !important;
+		}
+	</style>
 </head>
+
 <body>
-<div class="fluig-style-guide">
-<form name="form" role="form">
-	<div style="display: none;">
-		<input type="hidden" name="decisao" id="decisao">
+	<div class="fluig-style-guide">
+		<form name="form" role="form">
+			<div style="display: none;">
+				<input type="hidden" name="decisao" id="decisao">
+			    <input type="hidden" name="CODCOLIGADA" id="CODCOLIGADA">
+    			<input type="hidden" name="CODCCUSTO" id="CODCCUSTO">
+    			<input type="hidden" name="IDPRJ" id="IDPRJ">
+    			<input type="hidden" name="IDPERIODO" id="IDPERIODO">
+
+				<table id="tableProducao" tablename="tableProducao">
+					<thead>
+						<tr>
+							<th>CODTAREFA</th>
+							<th>DESCRICAO</th>
+							<th>UN</th>
+							<th>QUANTIDADE</th>
+							<th>Valor Un</th>
+							<th>Valor Total</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><input type="hidden" name="CODTAREFA" id="CODTAREFA" class="CODTAREFA"></td>
+							<td><input type="hidden" name="DESCRICAO" id="DESCRICAO" class="DESCRICAO"></td>
+							<td><input type="hidden" name="UN" id="UN" class="UN"></td>
+							<td><input type="hidden" name="QUANTIDADE" id="QUANTIDADE" class="QUANTIDADE"></td>
+							<td><input type="hidden" name="VALOR_UNIDADE" id="VALOR_UNIDADE" class="VALOR_UNIDADE"></td>
+							<td><input type="hidden" name="VALOR_TOTAL" id="VALOR_TOTAL" class="VALOR_TOTAL"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<app-root></app-root>
+
+			<script src="app-angular/main.js" type="module"></script>
+
+
+		</form>
 	</div>
-
-
-
-
-
-
-
-
-</form>
-</div>
 </body>
+
 </html>
