@@ -28,10 +28,10 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>wkfGerencialEconomicoDeObra</processId>
-      <version>1</version>
+      <version>2</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
-    <formId>0</formId>
+    <formId>32874</formId>
     <formIdV2>0</formIdV2>
     <editionMode>true</editionMode>
     <updateAttachmentsVersion>false</updateAttachmentsVersion>
@@ -102,10 +102,10 @@
         <companyId>1</companyId>
         <processId>wkfGerencialEconomicoDeObra</processId>
         <version>1</version>
-        <sequence>5</sequence>
+        <sequence>10</sequence>
       </processStatePK>
-      <stateName>Aprovação</stateName>
-      <stateDescription>Aprovação</stateDescription>
+      <stateName>Lançamento de Produção</stateName>
+      <stateDescription>Lançamento de Produção</stateDescription>
       <instruction></instruction>
       <deadlineTime>0</deadlineTime>
       <deadlineFieldName></deadlineFieldName>
@@ -125,8 +125,58 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>220</positionX>
-      <positionY>201</positionY>
+      <positionX>350</positionX>
+      <positionY>205</positionY>
+      <forecastedEffortType>0</forecastedEffortType>
+      <forecastedEffort>0</forecastedEffort>
+      <notifyManagerFollowUp>false</notifyManagerFollowUp>
+      <notifyManagerDelay>false</notifyManagerDelay>
+      <allowanceManagerTime>0</allowanceManagerTime>
+      <frequenceManagerTime>0</frequenceManagerTime>
+      <inhibitTransfer>false</inhibitTransfer>
+      <periodId></periodId>
+      <stateType>0</stateType>
+      <bpmnType>82</bpmnType>
+      <signalId>0</signalId>
+      <counterSign>false</counterSign>
+      <openInstances>0</openInstances>
+      <noticeExpirationAuthorityTime>0</noticeExpirationAuthorityTime>
+      <noticeExpirationRequisitionerTime>0</noticeExpirationRequisitionerTime>
+      <noticeExpirationManagerTime>0</noticeExpirationManagerTime>
+      <destinationStates/>
+      <digitalSignature>false</digitalSignature>
+      <executionType>1</executionType>
+    </ProcessState>
+    <ProcessState>
+      <processStatePK>
+        <companyId>1</companyId>
+        <processId>wkfGerencialEconomicoDeObra</processId>
+        <version>1</version>
+        <sequence>13</sequence>
+      </processStatePK>
+      <stateName>Correção de Integração</stateName>
+      <stateDescription>Correção de Integração</stateDescription>
+      <instruction></instruction>
+      <deadlineTime>0</deadlineTime>
+      <deadlineFieldName></deadlineFieldName>
+      <joint>false</joint>
+      <agreementPercentage>0</agreementPercentage>
+      <selectColleague>1</selectColleague>
+      <initialState>false</initialState>
+      <notifyAuthorityDelay>true</notifyAuthorityDelay>
+      <notifyRequisitionerDelay>false</notifyRequisitionerDelay>
+      <allowanceAuthorityTime>3600</allowanceAuthorityTime>
+      <frequenceAuthorityTime>3600</frequenceAuthorityTime>
+      <allowanceRequisitionerTime>0</allowanceRequisitionerTime>
+      <frequenceRequisitionerTime>0</frequenceRequisitionerTime>
+      <transferAttachments>false</transferAttachments>
+      <subProcessId></subProcessId>
+      <formFolder>0</formFolder>
+      <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
+      <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
+      <automatic>false</automatic>
+      <positionX>340</positionX>
+      <positionY>49</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -152,25 +202,47 @@
         <companyId>1</companyId>
         <processId>wkfGerencialEconomicoDeObra</processId>
         <version>1</version>
-        <sequence>7</sequence>
+        <sequence>14</sequence>
       </processStatePK>
-      <stateName>Decisão</stateName>
-      <stateDescription>Decisão</stateDescription>
+      <stateName>Intermediário</stateName>
+      <stateDescription>Intermediário</stateDescription>
+      <instruction>Evento intermediário do processo</instruction>
+      <deadlineTime>0</deadlineTime>
       <joint>false</joint>
+      <agreementPercentage>0</agreementPercentage>
+      <engineAllocationId></engineAllocationId>
+      <engineAllocationConfiguration></engineAllocationConfiguration>
+      <selectColleague>0</selectColleague>
       <initialState>false</initialState>
+      <notifyAuthorityDelay>true</notifyAuthorityDelay>
+      <notifyRequisitionerDelay>false</notifyRequisitionerDelay>
+      <allowanceAuthorityTime>1</allowanceAuthorityTime>
+      <frequenceAuthorityTime>1</frequenceAuthorityTime>
+      <allowanceRequisitionerTime>0</allowanceRequisitionerTime>
+      <frequenceRequisitionerTime>0</frequenceRequisitionerTime>
       <transferAttachments>false</transferAttachments>
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
-      <automatic>true</automatic>
+      <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
+      <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
+      <automatic>false</automatic>
       <positionX>420</positionX>
-      <positionY>185</positionY>
+      <positionY>210</positionY>
+      <forecastedEffortType>0</forecastedEffortType>
+      <forecastedEffort>0</forecastedEffort>
+      <notifyManagerFollowUp>false</notifyManagerFollowUp>
+      <notifyManagerDelay>false</notifyManagerDelay>
+      <frequenceManagerTime>0</frequenceManagerTime>
       <inhibitTransfer>false</inhibitTransfer>
-      <stateType>1</stateType>
-      <bpmnType>120</bpmnType>
+      <periodId></periodId>
+      <stateType>0</stateType>
+      <bpmnType>43</bpmnType>
       <signalId>0</signalId>
+      <counterSign>false</counterSign>
       <openInstances>0</openInstances>
       <destinationStates/>
       <digitalSignature>false</digitalSignature>
+      <parentSequence>10</parentSequence>
     </ProcessState>
     <ProcessState>
       <processStatePK>
@@ -220,44 +292,19 @@
       <digitalSignature>false</digitalSignature>
     </ProcessState>
   </list>
-  <list>
-    <ConditionProcessState>
-      <conditionProcessStatePK>
-        <companyId>1</companyId>
-        <processId>wkfGerencialEconomicoDeObra</processId>
-        <expressionOrder>1</expressionOrder>
-        <version>1</version>
-        <sequence>7</sequence>
-      </conditionProcessStatePK>
-      <condition></condition>
-      <destinationSequenceId>9</destinationSequenceId>
-      <conditionType>1</conditionType>
-    </ConditionProcessState>
-    <ConditionProcessState>
-      <conditionProcessStatePK>
-        <companyId>1</companyId>
-        <processId>wkfGerencialEconomicoDeObra</processId>
-        <expressionOrder>2</expressionOrder>
-        <version>1</version>
-        <sequence>7</sequence>
-      </conditionProcessStatePK>
-      <condition></condition>
-      <destinationSequenceId>4</destinationSequenceId>
-      <conditionType>1</conditionType>
-    </ConditionProcessState>
-  </list>
+  <list/>
   <list>
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
         <processId>wkfGerencialEconomicoDeObra</processId>
         <version>1</version>
-        <linkSequence>6</linkSequence>
+        <linkSequence>11</linkSequence>
       </processLinkPK>
       <actionLabel></actionLabel>
       <returnPermited>false</returnPermited>
       <initialStateSequence>4</initialStateSequence>
-      <finalStateSequence>5</finalStateSequence>
+      <finalStateSequence>10</finalStateSequence>
       <returnLabel></returnLabel>
       <name></name>
       <automaticLink>false</automaticLink>
@@ -269,28 +316,11 @@
         <companyId>1</companyId>
         <processId>wkfGerencialEconomicoDeObra</processId>
         <version>1</version>
-        <linkSequence>8</linkSequence>
+        <linkSequence>12</linkSequence>
       </processLinkPK>
       <actionLabel></actionLabel>
       <returnPermited>false</returnPermited>
-      <initialStateSequence>7</initialStateSequence>
-      <finalStateSequence>4</finalStateSequence>
-      <returnLabel></returnLabel>
-      <name></name>
-      <automaticLink>false</automaticLink>
-      <defaultLink>false</defaultLink>
-      <type>0</type>
-    </ProcessLink>
-    <ProcessLink>
-      <processLinkPK>
-        <companyId>1</companyId>
-        <processId>wkfGerencialEconomicoDeObra</processId>
-        <version>1</version>
-        <linkSequence>10</linkSequence>
-      </processLinkPK>
-      <actionLabel></actionLabel>
-      <returnPermited>false</returnPermited>
-      <initialStateSequence>7</initialStateSequence>
+      <initialStateSequence>10</initialStateSequence>
       <finalStateSequence>9</finalStateSequence>
       <returnLabel></returnLabel>
       <name></name>
@@ -303,12 +333,29 @@
         <companyId>1</companyId>
         <processId>wkfGerencialEconomicoDeObra</processId>
         <version>1</version>
-        <linkSequence>11</linkSequence>
+        <linkSequence>15</linkSequence>
       </processLinkPK>
       <actionLabel></actionLabel>
       <returnPermited>false</returnPermited>
-      <initialStateSequence>5</initialStateSequence>
-      <finalStateSequence>7</finalStateSequence>
+      <initialStateSequence>14</initialStateSequence>
+      <finalStateSequence>13</finalStateSequence>
+      <returnLabel></returnLabel>
+      <name></name>
+      <automaticLink>false</automaticLink>
+      <defaultLink>false</defaultLink>
+      <type>0</type>
+    </ProcessLink>
+    <ProcessLink>
+      <processLinkPK>
+        <companyId>1</companyId>
+        <processId>wkfGerencialEconomicoDeObra</processId>
+        <version>1</version>
+        <linkSequence>16</linkSequence>
+      </processLinkPK>
+      <actionLabel></actionLabel>
+      <returnPermited>false</returnPermited>
+      <initialStateSequence>13</initialStateSequence>
+      <finalStateSequence>10</finalStateSequence>
       <returnLabel></returnLabel>
       <name></name>
       <automaticLink>false</automaticLink>
@@ -317,7 +364,199 @@
     </ProcessLink>
   </list>
   <list/>
-  <list/>
+  <list>
+    <WorkflowProcessEvent>
+      <workflowProcessEventPK>
+        <companyId>1</companyId>
+        <eventId>servicetask10</eventId>
+        <processId>wkfGerencialEconomicoDeObra</processId>
+        <version>1</version>
+      </workflowProcessEventPK>
+      <eventDescription>function servicetask10(attempt, message) {
+    try {
+        var CODCOLIGADA = hAPI.getCardValue(&quot;CODCOLIGADA&quot;);
+        var CODCCUSTO = hAPI.getCardValue(&quot;CODCCUSTO&quot;);
+        var IDPRJ = hAPI.getCardValue(&quot;IDPRJ&quot;);
+        var IDPERIODO = hAPI.getCardValue(&quot;IDPERIODO&quot;);
+
+
+        var planilhaDeProducao = [];
+        var indexes = hAPI.getCardValue(&quot;tableProducao&quot;);
+
+        for (var i = 0; i &lt; indexes.length; i++) {
+            var id = indexes[i];
+
+            var cod_tarefa = hAPI.getCardValue(&quot;CODTAREFA&quot; + &quot;___&quot; + id);
+            var descricao_tarefa = hAPI.getCardValue(&quot;DESCRICAO&quot; + &quot;___&quot; + id);
+            var un_tarefa = hAPI.getCardValue(&quot;UN&quot; + &quot;___&quot; + id);
+            var quantidade_medida_tarefa = hAPI.getCardValue(&quot;QUANTIDADE&quot; + &quot;___&quot; + id);
+            var valor_unitario_tarefa = hAPI.getCardValue(&quot;VALOR_UNIDADE&quot; + &quot;___&quot; + id);
+            var valor_realizado_tarefa = hAPI.getCardValue(&quot;VALOR_TOTAL&quot; + &quot;___&quot; + id);
+
+            planilhaDeProducao.push({
+                cod_tarefa: cod_tarefa,
+                descricao_tarefa: descricao_tarefa,
+                un_tarefa: un_tarefa,
+                quantidade_medida_tarefa: quantidade_medida_tarefa,
+                valor_unitario_tarefa: valor_unitario_tarefa,
+                valor_realizado_tarefa: valor_realizado_tarefa,
+            });
+        }
+
+
+
+        for (var i = 0; i &lt; planilhaDeProducao.length; i++) {
+            var tarefa = planilhaDeProducao[i];
+            var XML = getXML(CODCOLIGADA, IDPRJ, IDPERIODO, tarefa.IDTRF, tarefa.valor_realizado_tarefa);
+
+
+            var pUsuario = &quot;fluig&quot;;
+			var pPassword = &quot;flu!g@cc#2018&quot;;
+            var service = ServiceManager.getService(&quot;wsProcessRM&quot;);
+            var serviceHelper = service.getBean();
+            var serviceLocator = service.instantiate(&quot;com.totvs.WsProcess&quot;);
+            var wsObj = serviceLocator.getRMIwsProcess();
+
+            var authService = serviceHelper.getBasicAuthenticatedClient(wsObj, &quot;com.totvs.IwsProcess&quot;, pUsuario, pPassword);
+            var ret = authService.executeWithParams(&apos;PrjEfetuarLancamentoMultiploData&apos;, XML);
+
+            if (ret == &quot;1&quot;) {
+                
+                return true;
+            }
+            else {
+                throw ret;
+            }
+        }
+
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+function getXML(CODCOLIGADA, IDPRJ, IDPERIODO, IDTRF, VALOR) {
+    var XML = &quot;&quot;;
+    XML += &apos;&lt;PrjLancMultiploParamsProc z:Id=&quot;i1&quot; xmlns=&quot;http://www.totvs.com.br/RM/&apos;;
+    XML += &apos;  xmlns:i=&quot;http://www.w3.org/2001/XMLSchema-instance&apos;;
+    XML += &apos;  xmlns:z=&quot;http://schemas.microsoft.com/2003/10/Serialization/&quot;&apos;;
+    XML += &apos;  &lt;ActionModule xmlns=&quot;http://www.totvs.com/&quot;&gt;M&lt;/ActionModule&apos;;
+    XML += &apos;  &lt;ActionName xmlns=&quot;http://www.totvs.com/&quot;&gt;PrjLancamentoMultiploServicoAction&lt;/ActionName&apos;;
+    XML += &apos;  &lt;ConnectionId i:nil=&quot;true&quot; xmlns=&quot;http://www.totvs.com/&quot; /&apos;;
+    XML += &apos;  &lt;ConnectionString i:nil=&quot;true&quot; xmlns=&quot;http://www.totvs.com/&quot; /&apos;;
+    XML += &apos;  &lt;Context z:Id=&quot;i2&quot; xmlns=&quot;http://www.totvs.com/&quot; xmlns:a=&quot;http://www.totvs.com.br/RM/&quot;&apos;;
+    XML += &apos;    &lt;a:_params xmlns:b=&quot;http://schemas.microsoft.com/2003/10/Serialization/Arrays&quot;&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$EXERCICIOFISCAL&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:int&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;8&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CODLOCPRT&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:int&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;-1&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CODTIPOCURSO&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:int&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;-1&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$EDUTIPOUSR&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;-1&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CODUNIDADEBIB&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:int&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;-1&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CODCOLIGADA&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:int&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;1&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;CONTEXTOPRJ&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:boolean&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;false&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$RHTIPOUSR&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;-1&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CODIGOEXTERNO&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;-1&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CODSISTEMA&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;M&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CODUSUARIOSERVICO&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot; /&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CODUSUARIO&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;Gabriel.Persike&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$IDPRJ&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:int&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;7090&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CHAPAFUNCIONARIO&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;-1&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;      &lt;b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;        &lt;b:Key i:type=&quot;c:string&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;$CODFILIAL&lt;/b:Key&apos;;
+    XML += &apos;        &lt;b:Value i:type=&quot;c:int&quot; xmlns:c=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;1&lt;/b:Value&apos;;
+    XML += &apos;      &lt;/b:KeyValueOfanyTypeanyType&apos;;
+    XML += &apos;    &lt;/a:_params&apos;;
+    XML += &apos;    &lt;a:Environment&gt;WebServices&lt;/a:Environment&apos;;
+    XML += &apos;  &lt;/Context&apos;;
+    XML += &apos;  &lt;CustomData i:nil=&quot;true&quot; xmlns=&quot;http://www.totvs.com/&quot; /&apos;;
+    XML += &apos;  &lt;DriverType i:nil=&quot;true&quot; xmlns=&quot;http://www.totvs.com/&quot; /&apos;;
+    XML += &apos;  &lt;MasterActionName xmlns=&quot;http://www.totvs.com/&quot;&gt;PrjPlanilhaServicoAction&lt;/MasterActionName&apos;;
+    XML += &apos;  &lt;PrimaryKeyList xmlns=&quot;http://www.totvs.com/&apos;;
+    XML += &apos;    xmlns:a=&quot;http://schemas.microsoft.com/2003/10/Serialization/Arrays&quot;&apos;;
+    XML += &apos;    &lt;a:ArrayOfanyType&apos;;
+    XML += &apos;      &lt;a:anyType i:type=&quot;b:short&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&apos; + CODCOLIGADA + &apos;&lt;/a:anyType&apos;;
+    XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&apos; + IDPRJ + &apos;&lt;/a:anyType&apos;;
+    XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&apos; + IDTRF + &apos;&lt;/a:anyType&apos;;
+    XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;0&lt;/a:anyType&apos;;
+    XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;0&lt;/a:anyType&apos;;
+    XML += &apos;    &lt;/a:ArrayOfanyType&apos;;
+    XML += &apos;  &lt;/PrimaryKeyList&apos;;
+    XML += &apos;  &lt;PrimaryKeyNames xmlns=&quot;http://www.totvs.com/&apos;;
+    XML += &apos;    xmlns:a=&quot;http://schemas.microsoft.com/2003/10/Serialization/Arrays&quot;&apos;;
+    XML += &apos;    &lt;a:string&gt;CODCOLIGADA&lt;/a:string&apos;;
+    XML += &apos;    &lt;a:string&gt;IDPRJ&lt;/a:string&apos;;
+    XML += &apos;    &lt;a:string&gt;IDTRF&lt;/a:string&apos;;
+    XML += &apos;    &lt;a:string&gt;TIPOPLANILHA&lt;/a:string&apos;;
+    XML += &apos;    &lt;a:string&gt;IDCENARIO&lt;/a:string&apos;;
+    XML += &apos;  &lt;/PrimaryKeyNames&apos;;
+    XML += &apos;  &lt;PrimaryKeyTableName xmlns=&quot;http://www.totvs.com/&quot;&gt;MTAREFA&lt;/PrimaryKeyTableName&apos;;
+    XML += &apos;  &lt;ProcessName xmlns=&quot;http://www.totvs.com/&quot;&gt;Lançamentos Múltiplos - Cronograma&lt;/ProcessName&apos;;
+    XML += &apos;  &lt;ServerName xmlns=&quot;http://www.totvs.com/&quot;&gt;PrjEfetuarLancamentoMultiploData&lt;/ServerName&apos;;
+    XML += &apos;  &lt;CodColigada&gt;&apos; + CODCOLIGADA + &apos;&lt;/CodColigada&apos;;
+    XML += &apos;  &lt;ConsideraPert&gt;false&lt;/ConsideraPert&apos;;
+    XML += &apos;  &lt;ConverterGrandeza&gt;Valor&lt;/ConverterGrandeza&apos;;
+    XML += &apos;  &lt;Cronogramas xmlns:a=&quot;http://schemas.datacontract.org/2004/07/RM.Prj.Parametros&quot;&apos;;
+    XML += &apos;    &lt;a:PrjTipoCronogramaEnum&gt;Medido&lt;/a:PrjTipoCronogramaEnum&apos;;
+    XML += &apos;  &lt;/Cronogramas&apos;;
+    XML += &apos;  &lt;Grandeza&gt;Valor&lt;/Grandeza&apos;;
+    XML += &apos;  &lt;IdPrj&gt;&apos; + IDPRJ + &apos;&lt;/IdPrj&apos;;
+    XML += &apos;  &lt;Periodos xmlns:a=&quot;http://schemas.microsoft.com/2003/10/Serialization/Arrays&quot;&apos;;
+    XML += &apos;    &lt;a:short&gt;&apos; + IDPERIODO + &apos;&lt;/a:short&apos;;
+    XML += &apos;  &lt;/Periodos&apos;;
+    XML += &apos;  &lt;Ratear&gt;false&lt;/Ratear&apos;;
+    XML += &apos;  &lt;SomenteConverter&gt;false&lt;/SomenteConverter&apos;;
+    XML += &apos;  &lt;UtilizaFormula&gt;false&lt;/UtilizaFormula&apos;;
+    XML += &apos;  &lt;UtilizarPercentualConcluidoPert&gt;false&lt;/UtilizarPercentualConcluidoPert&apos;;
+    XML += &apos;  &lt;valor&gt;&apos; + VALOR + &apos;&lt;/valor&apos;;
+    XML += &apos;&lt;/PrjLancMultiploParamsProc&apos;;
+
+    return XML;
+
+
+}</eventDescription>
+    </WorkflowProcessEvent>
+  </list>
   <list/>
   <list>
     <SwimLane>
@@ -371,44 +610,25 @@
   </list>
   <list/>
   <list/>
-  <list>
-    <ProcessLinkBend>
-      <processLinkBendPK>
-        <companyId>1</companyId>
-        <processId>wkfGerencialEconomicoDeObra</processId>
-        <version>1</version>
-        <linkSequence>6</linkSequence>
-        <bendSequence>1</bendSequence>
-      </processLinkBendPK>
-      <positionX>167</positionX>
-      <positionY>228</positionY>
-    </ProcessLinkBend>
-  </list>
-  <list/>
-  <list/>
-  <list/>
   <list/>
   <list/>
   <list/>
   <list/>
   <list>
-    <ConditionProcessAutomaticRules>
-      <sequence>7</sequence>
-      <expressionOrder>1</expressionOrder>
-      <ruleOrder>1</ruleOrder>
-      <field>decisao</field>
-      <value>Aprovado</value>
-      <operator>1</operator>
-      <valueType>1</valueType>
-    </ConditionProcessAutomaticRules>
-    <ConditionProcessAutomaticRules>
-      <sequence>7</sequence>
-      <expressionOrder>2</expressionOrder>
-      <ruleOrder>1</ruleOrder>
-      <field>decisao</field>
-      <value>Aprovado</value>
-      <operator>2</operator>
-      <valueType>1</valueType>
-    </ConditionProcessAutomaticRules>
+    <ProcessStateService>
+      <companyId>1</companyId>
+      <processId>wkfGerencialEconomicoDeObra</processId>
+      <version>1</version>
+      <sequence>10</sequence>
+      <attempts>0</attempts>
+      <sucessFullMessage>Integração executada com sucesso</sucessFullMessage>
+      <serviceName></serviceName>
+      <frequency>1</frequency>
+      <frequencyType>0</frequencyType>
+    </ProcessStateService>
   </list>
+  <list/>
+  <list/>
+  <list/>
+  <list/>
 </list>
