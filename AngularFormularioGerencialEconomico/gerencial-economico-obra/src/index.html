@@ -10,12 +10,18 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
   <!-- Fluig -->
-  <link type="text/css" rel="stylesheet" href="http://homologacao.castilho.com.br:2020/style-guide/css/fluig-style-guide-flat.min.css" />
-  <script type="text/javascript" src="http://homologacao.castilho.com.br:2020/portal/resources/js/jquery/jquery.js"></script>
-  <script type="text/javascript" src="http://homologacao.castilho.com.br:2020/portal/resources/js/jquery/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="http://homologacao.castilho.com.br:2020/portal/resources/js/mustache/mustache-min.js"></script>
-  <script type="text/javascript" src="http://homologacao.castilho.com.br:2020/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
-  <script type="text/javascript" src="http://desenvolvimento.castilho.com.br:3232/webdesk/vcXMLRPC.js" charset="utf-8"></script>
+  <link type="text/css" rel="stylesheet"
+    href="http://homologacao.castilho.com.br:2020/style-guide/css/fluig-style-guide-flat.min.css" />
+  <script type="text/javascript"
+    src="http://homologacao.castilho.com.br:2020/portal/resources/js/jquery/jquery.js"></script>
+  <script type="text/javascript"
+    src="http://homologacao.castilho.com.br:2020/portal/resources/js/jquery/jquery-ui.min.js"></script>
+  <script type="text/javascript"
+    src="http://homologacao.castilho.com.br:2020/portal/resources/js/mustache/mustache-min.js"></script>
+  <script type="text/javascript" src="http://homologacao.castilho.com.br:2020/style-guide/js/fluig-style-guide.min.js"
+    charset="utf-8"></script>
+  <script type="text/javascript" src="http://desenvolvimento.castilho.com.br:3232/webdesk/vcXMLRPC.js"
+    charset="utf-8"></script>
 
   <!-- Material Icon -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,6 +31,38 @@
 </head>
 
 <body style="margin: 0px" class="fluig-style-guide">
+  <div style="display: none;">
+    <input type="hidden" name="decisao" id="decisao">
+    <input type="hidden" name="decisao" id="CODCOLIGADA">
+    <input type="hidden" name="decisao" id="CODCCUSTO">
+    <input type="hidden" name="decisao" id="IDPRJ">
+    <input type="hidden" name="decisao" id="IDPERIODO">
+
+    <table id="tableProducao" tablename="tableProducao">
+      <thead>
+        <tr>
+          <th>CODTAREFA</th>
+          <th>DESCRICAO</th>
+          <th>UN</th>
+          <th>QUANTIDADE</th>
+          <th>Valor Un</th>
+          <th>Valor Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="hidden" name="CODTAREFA" id="CODTAREFA"></td>
+          <td><input type="hidden" name="DESCRICAO" id="DESCRICAO"></td>
+          <td><input type="hidden" name="UN" id="UN"></td>
+          <td><input type="hidden" name="QUANTIDADE" id="QUANTIDADE"></td>
+          <td><input type="hidden" name="VALOR_UNIDADE" id="VALOR_UNIDADE"></td>
+          <td><input type="hidden" name="VALOR_TOTAL" id="VALOR_TOTAL"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
   <app-root></app-root>
 </body>
 

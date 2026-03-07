@@ -34,3 +34,14 @@ mat-icon{
   background-color: rgb(255 205 42) !important;
   color: black;
 }
+
+.menu-item:disabled{
+  /* Visual styling */
+  opacity: 0.5; /* Makes the button appear faded */
+  cursor: not-allowed; /* Changes the cursor on hover */
+  background-color: #cccccc; /* Changes the background color */
+  color: #666666; /* Changes the text color */
+
+  /* Prevents hover/click effects on the disabled button */
+  pointer-events: none;
+}

@@ -1,0 +1,52 @@
+<div class="table-container">
+    <table class="modern-table">
+        <thead (click)="toggleShowBody()">
+            <tr>
+                <th colspan="7" style="border-bottom: 0px !important;">
+                    <div style="display: flex;justify-content: space-between;width: 100%;">
+                        <h4 style="display: flex; align-items: center;">
+                            <mat-icon>{{ showBody ? "expand_more":"expand_less"}}</mat-icon> 
+                            <span style="margin-right: 20px;">{{des_tarefa}}</span>
+                            <small class="success" style="margin-right: 10px;">
+                                Apontadas: {{tarefasApontadas}}
+                            </small>
+                            <small class="warning">
+                                Pendentes: {{tarefasPendentes}}
+                            </small>
+                        </h4>
+                        <h4>
+                            Total: {{totalTarefas | currency:"BRL"}}
+                        </h4>
+                    </div>
+                </th>
+            </tr>
+            <tr [style]="showBody? '':'display:none;'">
+                <th>Cod. Tarefa</th>
+                <th>Descrição</th>
+                <th>Quantidade Medida</th>
+                <th>UN</th>
+                <th>Valor Unitário</th>
+                <th>Valor Realizado (R$)</th>
+            </tr>
+        </thead>
+        <tbody [style]="showBody? 'max-height:80vh; overflow-y:scroll;':'display:none; max-height:80vh; overflow-y:scroll;'">
+            @for (tarefa of tarefas; track tarefa) {
+            <tr>
+                <td>{{tarefa.cod_tarefa}}</td>
+                <td>{{tarefa.descricao_tarefa}}</td>
+                <td>
+                    <input type="text" class="form-control" [(ngModel)]="tarefa.quantidade_medida_tarefa" currencyMask
+                        [options]="{nullable: true, prefix: ' ', thousands: '.', decimal: ',', precision:2}">
+                </td>
+                <td>
+                    {{tarefa.un_tarefa}}
+                </td>
+                <td>
+                    {{tarefa.valor_unitario_tarefa | currency:"BRL"}}
+                </td>
+                <td>{{ (tarefa.quantidade_medida_tarefa||0) * tarefa.valor_unitario_tarefa | currency:"BRL"}}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -2,7 +2,36 @@
 
     <h1> <mat-icon style="color:#ffcd2a">info</mat-icon> Dados Gerais da Obra</h1>
 
-
+    <div class="row">
+        <div class="col-md-3">
+            <label for="">Coligada</label>
+            <br>
+            <select name="COLIGADA" id="COLIGADA" FluigForm fieldName="CODCOLIGADA">
+                <option value=""></option>
+                <option value="1">Castilho</option>
+                <option value="12">Dromos</option>
+                <option value="13">Epya</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="">CODCCUSTO</label>
+            <br>
+            <select name="CODCCUSTO" id="CODCCUSTO" FluigForm fieldName="CODCCUSTO">
+                <option value=""></option>
+                <option value="1.2.066">1.2.066</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="">IDPRJ</label>
+            <br>
+            <input name="IDPRJ" id="IDPRJ" FluigForm fieldName="IDPRJ" />
+        </div>
+        <div class="col-md-3">
+            <label for="">IDPERIODO</label>
+            <br>
+            <input name="IDPERIODO" id="IDPERIODO" FluigForm fieldName="IDPERIODO" />
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-4">
             <app-card title="Cliente">
@@ -71,7 +100,7 @@
             <app-card title="Preço Inicial (PI) - Medido">
                 <b style="font-size: 18px; color: #16a34a;">
                     {{backlog?.vlr_pi_medido | currency:"BRL"}}
-                    
+
                 </b>
             </app-card>
         </div>

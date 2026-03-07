@@ -3,10 +3,12 @@
 
   <div style="display: flex;">
 
-    <aside style="width: 30%;">
+    <aside style="width: 25%;">
       <app-menu  (selectMenu)="changeActiveMenu($event)" [activeMenu]="activeMenu" />
     </aside>
     <main style="width: 100%;">
+
+      
 
       @if(activeMenu == "Dados Gerais"){
         <app-dados-gerais [backlog]="backlog()"/>

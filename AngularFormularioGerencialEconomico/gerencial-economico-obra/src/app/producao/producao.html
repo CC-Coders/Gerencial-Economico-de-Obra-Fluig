@@ -1,20 +1,23 @@
 <div id="producao">
 
-    <h1 style="display: flex; justify-content: space-between;">
-        <div>
-            <mat-icon style="color:#ffcd2a">engineering</mat-icon>
-            Apontamento de Produção
-        </div>
-        <b>Total: {{getValorTotal() | currency:"BRL"}}</b>
-    </h1>
-    <button class="btn btn-primary" (click)="loadProducao()">Load</button>
     <div>
+        <h1 style="display: flex; justify-content: space-between;">
+            <div>
+                <mat-icon style="color:#ffcd2a">engineering</mat-icon>
+                Apontamento de Produção
+            </div>
+            <b>Total: {{ValorTotal | currency:"BRL"}}</b>
+        </h1>
+        <button class="btn btn-primary" (click)="loadProducao()">Load</button>
+    </div>
+    <!-- <div style="height: 80vh; overflow-y: scroll;">
         <app-fluig-table [data]="dataSource()"
             tablename="tableProducao"
             [columns]="['Cod. Tarefa', 'Descrição', 'Quantidade', 'Quantidade Medida', 'Valor Unitário', 'Valor Realizado (R$)']">
 
             <ng-template let-row let-i="index">
                 <tr>
+                    <td style="display: none;">{{row.id_tarefa}}</td>
                     <td>{{row.cod_tarefa}}</td>
                     <td>{{row.descricao_tarefa}}</td>
                     <td>{{row.un_tarefa}}</td>
@@ -27,7 +30,17 @@
             </ng-template>
 
         </app-fluig-table>
+    </div> -->
+
+    <div style="
+    height: calc(90vh - 80px);
+    overflow: scroll;
+" >
+        @for (grupo of grupoTarefas().filhos; track grupo) {
+            <app-producao-table [tarefas]="grupo.tarefas" [cod_tarefa]="grupo.cod_tarefa" [des_tarefa]="grupo.descricao_tarefa"/>
+        }
     </div>
+
 
     <!-- <div class="row" style="height: 80vh; overflow-y: scroll; margin-top: 20px;">
         <div class="col-md-12">

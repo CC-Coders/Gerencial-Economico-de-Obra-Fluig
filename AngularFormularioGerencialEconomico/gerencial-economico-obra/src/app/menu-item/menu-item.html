@@ -1,4 +1,4 @@
-<button type="button"  [ngClass]="isActive ? 'menu-item active' : 'menu-item'">
+<button type="button"  [ngClass]="isActive ? 'menu-item active' : 'menu-item'" [disabled]="disabled ? 'disabled':''">
     <div style="display: flex; align-items: center;justify-content: flex-start;">
         <mat-icon>{{ICON_NAME}}</mat-icon>
         {{NAME}}

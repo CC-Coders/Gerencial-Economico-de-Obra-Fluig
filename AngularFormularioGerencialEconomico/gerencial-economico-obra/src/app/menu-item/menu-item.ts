@@ -13,4 +13,5 @@ export class MenuItem {
   @Input({required:true}) NAME!: string;
   @Input({required:true}) ICON_NAME!: string;
   @Input() isActive?: boolean;
+  @Input() disabled?: boolean|undefined;
 }

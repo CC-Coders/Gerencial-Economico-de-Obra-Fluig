@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Card } from '../card/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CurrencyPipe } from '@angular/common';
+import { FluigForm } from '../../fluigForms';
 
 export interface Backlog {
   vlr_pi_medido: number;
@@ -27,7 +28,7 @@ export interface Backlog {
 
 @Component({
   selector: 'app-dados-gerais',
-  imports: [Card, MatIconModule, CurrencyPipe],
+  imports: [Card, MatIconModule, CurrencyPipe, FluigForm],
   templateUrl: './dados-gerais.html',
   styleUrl: './dados-gerais.css',
 })
