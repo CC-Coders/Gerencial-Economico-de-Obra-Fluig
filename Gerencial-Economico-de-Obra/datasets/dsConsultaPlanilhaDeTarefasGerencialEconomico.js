@@ -91,7 +91,7 @@ function createDataset(fields, constraints, sortFields) {
         query += " ";
         query += "    ) ";
         query += " ";
-        query += "    SELECT  ";
+        query += "    SELECT ";
         query += "		planilha.CODCOLIGADA AS cod_coligada ";
         query += "        ,planilha.IDPRJ AS id_projeto ";
         query += "        ,cronograma.periodo AS IDPERIODO ";
@@ -141,7 +141,7 @@ function createDataset(fields, constraints, sortFields) {
         query += "    AND planilha.IDPRJ = cronograma.IDPRJ ";
         query += "    AND planilha.IDTRF = cronograma.IDTRF ";
         query += " ";
-        query += "    WHERE planilha.CODCOLIGADA = ? AND CLASSIFICACAO = 'Plan e Acomp'  and planilha.idprj = ? and TIPOPLANILHA = 0 and SERVICO = 1 ";
+        query += "    WHERE planilha.CODCOLIGADA = ? AND CLASSIFICACAO = 'Plan e Acomp'  and planilha.idprj = ? and TIPOPLANILHA = 1 and SERVICO = 1 ";
         query += " ";
         query += "    ORDER BY planilha.IDPRJ, NIVEL, DT_PERIODO ";
 

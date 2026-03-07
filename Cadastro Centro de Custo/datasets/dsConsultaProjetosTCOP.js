@@ -4,7 +4,7 @@ function createDataset(fields, constraints, sortFields) {
         lancaErroSeConstraintsObrigatoriasNaoInformadas(constraints, ["CODCOLIGADA", "CODCCUSTO"]);
 
 
-        var CLASSIFICACAO = "Planejamento";
+        var CLASSIFICACAO = "Plan e Acomp";
 
         var query = "SELECT CODCOLIGADA, IDPRJ, CODPRJ, DESCRICAO, CLASSIFICACAO, CODCCUSTO ";
         query += "FROM MPRJ ";
