@@ -20,7 +20,6 @@ function createDataset(fields, constraints, sortFields) {
 
         var retorno = executaQueryNoBigQuery(query);
 
-        log.dir(retorno);
         return returnDataset("SUCCESS", "", JSON.stringify(retorno));
 
 

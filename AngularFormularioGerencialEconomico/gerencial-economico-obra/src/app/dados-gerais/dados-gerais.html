@@ -2,11 +2,23 @@
 
     <h1> <mat-icon style="color:#ffcd2a">info</mat-icon> Dados Gerais da Obra</h1>
 
+    @if(atividade != 0 && atividade != 4){
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-3">
+                <button class="btn btn-success btn-block" (click)="aprovar()" >Aprovar</button>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-danger btn-block" (click)="reprovar()">Reprovar</button>
+            </div>
+        </div>
+    }
+
     <div class="row">
         <div class="col-md-3">
             <label for="">Coligada</label>
             <br>
-            <select name="COLIGADA" id="COLIGADA" FluigForm fieldName="CODCOLIGADA">
+            <select name="COLIGADA" id="COLIGADA" (change)="saveFormField($event, 'CODCOLIGADA')" [(ngModel)]="CODCOLIGADA" fieldName="CODCOLIGADA">
                 <option value=""></option>
                 <option value="1">Castilho</option>
                 <option value="12">Dromos</option>
@@ -16,7 +28,7 @@
         <div class="col-md-3">
             <label for="">CODCCUSTO</label>
             <br>
-            <select name="CODCCUSTO" id="CODCCUSTO" FluigForm fieldName="CODCCUSTO">
+            <select name="CODCCUSTO" id="CODCCUSTO" (change)="saveFormField($event, 'CODCCUSTO')" [(ngModel)]="CODCCUSSTO" fieldName="CODCCUSTO">
                 <option value=""></option>
                 <option value="1.2.066">1.2.066</option>
             </select>
@@ -24,97 +36,103 @@
         <div class="col-md-3">
             <label for="">IDPRJ</label>
             <br>
-            <input name="IDPRJ" id="IDPRJ" FluigForm fieldName="IDPRJ" />
+            <input name="IDPRJ" id="IDPRJ"  (change)="saveFormField($event, 'IDPRJ')" [(ngModel)]="IDPRJ" fieldName="IDPRJ" />
         </div>
         <div class="col-md-3">
             <label for="">IDPERIODO</label>
             <br>
-            <input name="IDPERIODO" id="IDPERIODO" FluigForm fieldName="IDPERIODO" />
+            <input name="IDPERIODO" id="IDPERIODO" (change)="saveFormField($event, 'IDPERIODO')"  [(ngModel)]="IDPERIODO" fieldName="IDPERIODO" />
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-4">
+    <div class="row flexRow">
+        <div class="col-md-4 column">
             <app-card title="Cliente">
                 <b style="font-size: 18px;">
-                    {{backlog?.des_cliente}}
+                    {{backlog.des_cliente}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 column">
             <app-card title="Obra">
                 <b style="font-size: 18px;">
-                    {{backlog?.cod_obra}} - {{backlog?.des_centro_custo}}
+                    {{backlog.cod_obra}} - {{backlog.des_centro_custo}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 column">
             <app-card title="Índice de Reajuste">
                 <b style="font-size: 18px;">
-                    {{backlog?.des_indice_reajuste}}
+                    {{backlog.des_indice_reajuste}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+    </div>
+    <div class="row flexRow">
+        <div class="col-md-4 col-md-4 column">
             <app-card title="Coordenador">
                 <b style="font-size: 18px;">
-                    {{backlog?.des_coordenacao}}
+                    {{backlog.des_coordenacao}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 col-md-4 column">
             <app-card title="Líder do Contrato">
                 <b style="font-size: 18px;">
-                    {{backlog?.des_lider_contrato}}
+                    {{backlog.des_lider_contrato}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 col-md-4 column">
             <app-card title="Não Executável">
                 <b style="font-size: 18px; color: red;">
-                    {{backlog?.vlr_nao_executavel | currency:"BRL"}}
+                    {{backlog.vlr_nao_executavel | currency:"BRL"}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+    </div>
+    <div class="row flexRow">
+        <div class="col-md-4 col-md-4 column">
             <app-card title="Preço Inicial (PI)">
                 <b style="font-size: 18px; color:#ffcd2a;">
-                    {{backlog?.vlr_pi | currency:"BRL"}}
+                    {{backlog.vlr_pi | currency:"BRL"}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 col-md-4 column">
             <app-card title="Reajuste (R)">
                 <b style="font-size: 18px; color:#ffcd2a;">
-                    {{backlog?.vlr_r | currency:"BRL"}}
+                    {{backlog.vlr_r | currency:"BRL"}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 col-md-4 column">
             <app-card title="Aditivos">
                 <b style="font-size: 18px; color:#ffcd2a;">
-                    {{backlog?.vlr_aditivos | currency:"BRL"}}
+                    {{backlog.vlr_aditivos | currency:"BRL"}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+    </div>
+    <div class="row flexRow">
+        <div class="col-md-4 col-md-4 column">
             <app-card title="Preço Inicial (PI) - Medido">
                 <b style="font-size: 18px; color: #16a34a;">
-                    {{backlog?.vlr_pi_medido | currency:"BRL"}}
+                    {{backlog.vlr_pi_medido | currency:"BRL"}}
 
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 col-md-4 column">
             <app-card title="Reajuste (R) - Medido">
                 <b style="font-size: 18px;color: #16a34a">
-                    {{backlog?.vlr_r_medido | currency:"BRL"}}
+                    {{backlog.vlr_r_medido | currency:"BRL"}}
                 </b>
             </app-card>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 col-md-4 column">
             <app-card title="Aditivos - Medido">
                 <b style="font-size: 18px;color: #16a34a">
-                    {{backlog?.vlr_aditivos_medido | currency:"BRL"}}
+                    {{backlog.vlr_aditivos_medido | currency:"BRL"}}
                 </b>
             </app-card>
         </div>

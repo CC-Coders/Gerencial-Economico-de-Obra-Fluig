@@ -1,12 +1,12 @@
 <div class="table-container">
     <table class="modern-table">
-        <thead (click)="toggleShowBody()">
+        <thead (click)="toogleShown()">
             <tr>
                 <th colspan="7" style="border-bottom: 0px !important;">
                     <div style="display: flex;justify-content: space-between;width: 100%;">
                         <h4 style="display: flex; align-items: center;">
-                            <mat-icon>{{ showBody ? "expand_more":"expand_less"}}</mat-icon> 
-                            <span style="margin-right: 20px;">{{des_tarefa}}</span>
+                            <mat-icon>{{ shown ? "expand_more":"expand_less"}}</mat-icon> 
+                            <span style="margin-right: 20px;">{{grupo.des_tarefa}}</span>
                             <small class="success" style="margin-right: 10px;">
                                 Apontadas: {{tarefasApontadas}}
                             </small>
@@ -20,7 +20,7 @@
                     </div>
                 </th>
             </tr>
-            <tr [style]="showBody? '':'display:none;'">
+            <tr [style.display]="shown? 'table-row':'none'">
                 <th>Cod. Tarefa</th>
                 <th>Descrição</th>
                 <th>Quantidade Medida</th>
@@ -29,22 +29,21 @@
                 <th>Valor Realizado (R$)</th>
             </tr>
         </thead>
-        <tbody [style]="showBody? 'max-height:80vh; overflow-y:scroll;':'display:none; max-height:80vh; overflow-y:scroll;'">
-            @for (tarefa of tarefas; track tarefa) {
+        <tbody [style.display]="shown ? '':'none'" style="max-height:80vh; overflow-y:scroll;">
+            @for (tarefa of tarefas(); track tarefa) {
             <tr>
                 <td>{{tarefa.cod_tarefa}}</td>
-                <td>{{tarefa.descricao_tarefa}}</td>
+                <td>{{tarefa.des_tarefa}}</td>
                 <td>
-                    <input type="text" class="form-control" [(ngModel)]="tarefa.quantidade_medida_tarefa" currencyMask
-                        [options]="{nullable: true, prefix: ' ', thousands: '.', decimal: ',', precision:2}">
+                    <input type="text" class="form-control" [attr.readonly]="isEditable ? true:null" [(ngModel)]="tarefa.quantidade" currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',', nullable:true }">
                 </td>
                 <td>
-                    {{tarefa.un_tarefa}}
+                    {{tarefa.un_medida}}
                 </td>
                 <td>
-                    {{tarefa.valor_unitario_tarefa | currency:"BRL"}}
+                    {{tarefa.vlr_unitario | currency:"BRL"}}
                 </td>
-                <td>{{ (tarefa.quantidade_medida_tarefa||0) * tarefa.valor_unitario_tarefa | currency:"BRL"}}</td>
+                <td>{{ (tarefa.quantidade||0) * tarefa.vlr_unitario | currency:"BRL"}}</td>
             </tr>
             }
         </tbody>

@@ -143,14 +143,13 @@ function createDataset(fields, constraints, sortFields) {
         query += " ";
         query += "    WHERE planilha.CODCOLIGADA = ? AND CLASSIFICACAO = 'Plan e Acomp'  and planilha.idprj = ? and TIPOPLANILHA = 1 and SERVICO = 1 ";
         query += " ";
-        query += "    ORDER BY planilha.IDPRJ, NIVEL, DT_PERIODO ";
+        query += "    ORDER BY planilha.CODTRF, NIVEL, DT_PERIODO ";
 
         var retorno = executaQuery(query,[
             {type:"int", value:constraints.CODCOLIGADA},
             {type:"int", value:constraints.IDPRJ},
         ],"/jdbc/FluigRM");
 
-        log.dir(retorno);
         return returnDataset("SUCCESS", "", JSON.stringify(retorno));
 
 

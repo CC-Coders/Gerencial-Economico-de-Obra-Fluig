@@ -10,7 +10,7 @@ function createDataset(fields, constraints, sortFields) {
         query += "AND IDPRJ = ?  ";
         query += "AND SERVICO = 0 ";
         query += "AND TIPOPLANILHA = 1 ";
-        query += "AND NIVEL > 1 ";
+        query += "AND NIVEL = 2 ";
 
 
         var retorno = executaQuery(query,[
@@ -18,7 +18,6 @@ function createDataset(fields, constraints, sortFields) {
             {type:"int", value:constraints.IDPRJ},
         ],"/jdbc/FluigRM");
 
-        log.dir(retorno);
         return returnDataset("SUCCESS", "", JSON.stringify(retorno));
 
 

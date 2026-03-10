@@ -1,6 +1,4 @@
 <header></header>
-
-
   <div style="display: flex;">
 
     <aside style="width: 25%;">
@@ -9,9 +7,8 @@
     <main style="width: 100%;">
 
       
-
       @if(activeMenu == "Dados Gerais"){
-        <app-dados-gerais [backlog]="backlog()"/>
+        <app-dados-gerais/>
       }
       @if(activeMenu == "Producao"){
         <app-producao/>
@@ -23,4 +20,6 @@
 
 
 
-<footer></footer>
+<footer>
+  <button type="button" class="btn btn-primary" id="btnSend" (click)="saveAndSend()">Enviar</button>
+</footer>

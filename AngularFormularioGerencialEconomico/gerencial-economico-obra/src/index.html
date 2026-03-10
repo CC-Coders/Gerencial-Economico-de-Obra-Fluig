@@ -1,42 +1,75 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>GerencialEconomicoObra</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<head>
-  <meta charset="utf-8" />
-  <title>GerencialEconomicoObra</title>
-  <base href="/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!-- Fluig -->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="http://homologacao.castilho.com.br:2020/style-guide/css/fluig-style-guide-flat.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="http://homologacao.castilho.com.br:2020/portal/resources/js/jquery/jquery.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://homologacao.castilho.com.br:2020/portal/resources/js/jquery/jquery-ui.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://homologacao.castilho.com.br:2020/portal/resources/js/mustache/mustache-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://homologacao.castilho.com.br:2020/style-guide/js/fluig-style-guide.min.js"
+      charset="utf-8"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://desenvolvimento.castilho.com.br:3232/webdesk/vcXMLRPC.js"
+      charset="utf-8"
+    ></script>
 
-  <!-- Fluig -->
-  <link type="text/css" rel="stylesheet"
-    href="http://homologacao.castilho.com.br:2020/style-guide/css/fluig-style-guide-flat.min.css" />
-  <script type="text/javascript"
-    src="http://homologacao.castilho.com.br:2020/portal/resources/js/jquery/jquery.js"></script>
-  <script type="text/javascript"
-    src="http://homologacao.castilho.com.br:2020/portal/resources/js/jquery/jquery-ui.min.js"></script>
-  <script type="text/javascript"
-    src="http://homologacao.castilho.com.br:2020/portal/resources/js/mustache/mustache-min.js"></script>
-  <script type="text/javascript" src="http://homologacao.castilho.com.br:2020/style-guide/js/fluig-style-guide.min.js"
-    charset="utf-8"></script>
-  <script type="text/javascript" src="http://desenvolvimento.castilho.com.br:3232/webdesk/vcXMLRPC.js"
-    charset="utf-8"></script>
+    <!-- Material Icon -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <!-- Material Icon -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-</head>
+    <script>
+          parent.$(".workflow-actions").hide();
+    </script>
+  </head>
 
-<body style="margin: 0px" class="fluig-style-guide">
+  <body style="margin: 0px" class="fluig-style-guide">
   <div style="display: none;">
+		  <input type="hidden" name="atividade" id="atividade" value="0">
+				<input type="hidden" name="formMode" id="formMode">
+				<input type="hidden" name="isMobile" id="isMobile">
+				<input type="hidden" name="userCode" id="userCode">
+
     <input type="hidden" name="decisao" id="decisao">
-    <input type="hidden" name="decisao" id="CODCOLIGADA">
-    <input type="hidden" name="decisao" id="CODCCUSTO">
-    <input type="hidden" name="decisao" id="IDPRJ">
-    <input type="hidden" name="decisao" id="IDPERIODO">
+    <input type="hidden" name="CODCOLIGADA" id="CODCOLIGADA">
+    <input type="hidden" name="CODCCUSTO" id="CODCCUSTO">
+    <input type="hidden" name="IDPRJ" id="IDPRJ">
+    <input type="hidden" name="IDPERIODO" id="IDPERIODO">
 
     <table id="tableProducao" tablename="tableProducao">
       <thead>
@@ -62,8 +95,6 @@
     </table>
   </div>
 
-
-  <app-root></app-root>
-</body>
-
+    <app-root></app-root>
+  </body>
 </html>
