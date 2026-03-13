@@ -46,7 +46,6 @@ export class ProducaoService {
       }
 
       this.tarefas.set(tarefas);
-      console.log(this.tarefas());
       this.loadGrupos(CODCOLIGADA, IDPRJ);
 
     }
@@ -77,7 +76,6 @@ export class ProducaoService {
     if (ds.values[0].STATUS != 'SUCCESS') {
       throw ds.values[0].MENSAGEM;
     } else {
-      console.log(JSON.parse(ds.values[0].RESULT));
       this.tarefas.set(formatTarefas(JSON.parse(ds.values[0].RESULT)));
     }
 
@@ -125,7 +123,6 @@ export class ProducaoService {
     if (ds.values[0].STATUS != 'SUCCESS') {
       throw ds.values[0].MENSAGEM;
     } else {
-      console.log(JSON.parse(ds.values[0].RESULT));
       this.grupos.set(formatGrupos(JSON.parse(ds.values[0].RESULT)));
     }
 
@@ -177,7 +174,6 @@ export class ProducaoService {
     }
 
     this.tarefas.set(newTarefas);
-    console.log(this.tarefas());  
   }
 
   saveData() {
@@ -185,7 +181,6 @@ export class ProducaoService {
 
     var tarefas = this.tarefas();
     var data = [];
-    console.log(tarefas);
 
     for (const tarefa of tarefas) {
       var row = [];
@@ -200,7 +195,6 @@ export class ProducaoService {
       data.push(row);
     }
 
-    console.log(data);
     this.fluigForm.updatePaiFilho(tablename, data);
   }
 }

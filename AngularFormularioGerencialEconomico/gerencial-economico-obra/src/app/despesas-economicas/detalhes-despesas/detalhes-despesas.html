@@ -1,0 +1,58 @@
+<div class="backdrop" (click)="onClose()">
+
+</div>
+<dialog id="my-dialog" open>
+    <header>
+        <h3>
+            <mat-icon style="color:#ffcd2a">list_alt</mat-icon>
+            {{title}}
+        </h3>
+    </header>
+    <main>
+        <div class="table-container">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th (click)="changeSorting('descricao')">
+                            <div style="display: flex;justify-content: space-between;">
+                                <span>DESCRIÇÃO</span>
+                                @if(columnSort == "descricao"){
+                                <mat-icon>{{ sortOrder == "ASC" ? "expand_more":"expand_less"}}</mat-icon>
+                                }
+                            </div>
+                        </th>
+                        <th (click)="changeSorting('data')">
+                            <div style="display: flex;justify-content: space-between;">
+                                <span>DATA</span>
+                                @if(columnSort == "data"){
+                                <mat-icon>{{ sortOrder == "ASC" ? "expand_more":"expand_less"}}</mat-icon>
+                                }
+                            </div>
+                        </th>
+                        <th (click)="changeSorting('valor')">
+                            <div style="display: flex;justify-content: space-between;">
+                                <span>VALOR</span>
+                                @if(columnSort == "valor"){
+                                <mat-icon>{{ sortOrder == "ASC" ? "expand_more":"expand_less"}}</mat-icon>
+                                }
+                            </div>
+                            
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="scrollTable">
+                    @for (row of despesas; track row){
+                    <tr>
+                        <td>{{row.descricao}}</td>
+                        <td>{{row.data | date:"dd/MM/yyyy"}}</td>
+                        <td><b style="color: #dc2626;">{{row.valor | currency:"BRL"}}</b></td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <footer>
+        <button style="float: right;" class="btn btn-default" (click)="onClose()">Fechar</button>
+    </footer>
+</dialog>

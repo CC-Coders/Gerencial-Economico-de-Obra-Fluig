@@ -5,10 +5,11 @@ import { DadosGerais } from './dados-gerais/dados-gerais';
 import { ProducaoService } from './producao/producao.service';
 import { DadosGeraisService } from './dados-gerais/dados-gerais.service';
 import { FluigForm } from './fluig.service.ts/fluigForm.service';
+import { DespesasEconomicas } from './despesas-economicas/despesas-economicas';
 
 @Component({
   selector: 'app-root',
-  imports: [Menu, Producao, DadosGerais],
+  imports: [Menu, Producao, DadosGerais, DespesasEconomicas],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -19,7 +20,8 @@ export class App {
     private dadosGeraisService:DadosGeraisService,
     private fluigForm:FluigForm,
   ){}
-  activeMenu = "Dados Gerais";
+  // activeMenu = "Dados Gerais";
+  activeMenu = "Despesas Economicas";
 
   ngOnInit(){
       this.dadosGeraisService.loadBacklog();
