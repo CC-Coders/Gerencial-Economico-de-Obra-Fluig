@@ -3,16 +3,19 @@ import {MatIconModule} from '@angular/material/icon';
 import { ProducaoService } from './producao.service';
 import { ProducaoTable } from './producao-table/producao-table';
 import { CurrencyPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 
 
 
 @Component({
   selector: 'app-producao',
-  imports: [MatIconModule, ProducaoTable, CurrencyPipe],
+  imports: [MatIconModule, ProducaoTable, CurrencyPipe,FormsModule],
   templateUrl: './producao.html',
   styleUrl: './producao.css',
 })
 export class Producao {
+  percentAplicado = 0;
 
   constructor(private producaoService: ProducaoService){}
 
@@ -30,5 +33,9 @@ export class Producao {
   }
   get tarefas(){
     return this.producaoService.getTarefas;
+  }
+
+  onLancarValorTeste(){
+    this.producaoService.lancaValorTeste(this.percentAplicado);
   }
 }

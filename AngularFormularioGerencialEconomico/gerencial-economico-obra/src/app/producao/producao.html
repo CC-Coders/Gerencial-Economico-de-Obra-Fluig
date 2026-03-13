@@ -9,9 +9,10 @@
         </h1>
     </div>
     <div>
-
         @for(grupo of grupos; track grupo){
             <app-producao-table [grupo]="grupo"/>
         }
+        <input type="text" name="percentAplicado" id="percentAplicado" [(ngModel)]="percentAplicado">
+        <button class="btn btn-primary" (click)="onLancarValorTeste()">Lancar valores teste</button>
     </div>
 </div>

@@ -5,62 +5,158 @@ function servicetask10(attempt, message) {
         var IDPRJ = hAPI.getCardValue("IDPRJ");
         var IDPERIODO = hAPI.getCardValue("IDPERIODO");
 
+        // Busca QUANTIDADE e VALOR_UNITARIO da Tarefa, e também o PERCENTUAL_REALIZADO no ultimo Periodo
+        var tarefasCronograma = calculaPercentualConcluido(CODCOLIGADA, IDPRJ);
+        log.info("tarefasCronograma");
+        log.dir(tarefasCronograma);
+
         var cardData = hAPI.getCardData(getValue("WKNumProces"));
-
-        var planilhaDeProducao = [];
+        var tasks = [];
         var indexes = hAPI.getChildrenIndexes("tableProducao");
-
-        for (var i = 0; i < indexes.length && i<10; i++) {
+        for (var i = 0; i < indexes.length; i++) {
             var id = indexes[i];
 
-            var id_tarefa = cardData.get("id_tarefa" + "___" + id);
-            var cod_tarefa = cardData.get("cod_tarefa" + "___" + id);
-            var descricao_tarefa = cardData.get("des_tarefa" + "___" + id);
-            var un_tarefa = cardData.get("un_medida" + "___" + id);
-            var quantidade_medida_tarefa = cardData.get("quantidade" + "___" + id);
-            var valor_unitario_tarefa = cardData.get("vlr_unitario" + "___" + id);
+            var tarefa = {
+                id_tarefa: cardData.get("id_tarefa" + "___" + id),
+                cod_tarefa: cardData.get("cod_tarefa" + "___" + id),
+                descricao_tarefa: cardData.get("des_tarefa" + "___" + id),
+                un_tarefa: cardData.get("un_medida" + "___" + id),
+                quantidade_medida_tarefa: cardData.get("quantidade" + "___" + id),
+                valor_unitario_tarefa: cardData.get("vlr_unitario" + "___" + id),
+            }
 
-            planilhaDeProducao.push({
-                id_tarefa: id_tarefa,
-                cod_tarefa: cod_tarefa,
-                descricao_tarefa: descricao_tarefa,
-                un_tarefa: un_tarefa,
-                quantidade_medida_tarefa: quantidade_medida_tarefa,
-                valor_unitario_tarefa: valor_unitario_tarefa
-            });
-        }
+            for (var j = 0; j < tarefasCronograma.length; j++) {
+                var e = tarefasCronograma[j];
+                if (e.IDTRF == tarefa.id_tarefa) {
+                    tarefa.per_realizado = e.PERCREALIZADO;
+                    tarefa.quantidade_total = e.QUANTIDADE;
+                }
+            }
 
-        for (var i = 0; i < planilhaDeProducao.length; i++) {
-            log.info("I:"+i);
-            var tarefa = planilhaDeProducao[i];
-          
-            var query = "INSERT INTO MTRFREAL (CODCOLIGADA,IDPRJ,IDTRF,NUMPERIODO, QUANTREAL, CAMPOINFORMADO) "
-                query += "VALUES ";
-                query += "(?,?,?,?,?,?)";
+            var PERCENTUAL_REALIZADO_ACUMULADO = tarefa.per_realizado;
+            var PERCENTUAL_REALIZADO_APONTADO = ((tarefa.quantidade_medida_tarefa * 100) / tarefa.quantidade_total);
+            log.info(PERCENTUAL_REALIZADO_ACUMULADO)
+            log.info(PERCENTUAL_REALIZADO_APONTADO)
 
-                executeInsert(query, [
-                    {type:"int", value:CODCOLIGADA},
-                    {type:"int", value:IDPRJ},
-                    {type:"int", value:tarefa.id_tarefa},
-                    {type:"int", value:IDPERIODO},
-                    {type:"float", value:tarefa.quantidade_medida_tarefa},
-                    {type:"text", value:"Q"},//Quantidade
-                ], "/jdbc/FluigRM");
-          
-          
-            // var XML = getXML(CODCOLIGADA, IDPRJ, IDPERIODO, tarefa.id_tarefa, tarefa.quantidade_medida_tarefa);
-            // var ds = DatasetFactory.getDataset("dsAtualizaItemPlanejamentoGerencialEconomico",null,[
-            //     DatasetFactory.createConstraint("CODCOLIGADA", CODCOLIGADA,CODCOLIGADA,ConstraintType.MUST),
-            //     DatasetFactory.createConstraint("XML", XML,XML,ConstraintType.MUST),
-            // ],null);
-
-            // var STATUS = ds.getValue(0,"STATUS");
-            // if (STATUS != "SUCCESS") {
-            //     throw ds.getValue(0,"MENSAGEM");
-            // }
+            tarefa.per_realizado = (parseFloat(PERCENTUAL_REALIZADO_ACUMULADO) + parseFloat(PERCENTUAL_REALIZADO_APONTADO));
+            tasks.push({
+                "taskId": tarefa.id_tarefa,
+                "accumulatedPercentageCompleted": tarefa.per_realizado.toFixed(2)
+            })
         }
 
 
+        var DATA_PERIODO = consultaDataDoPeriodo(CODCOLIGADA, IDPRJ, IDPERIODO)[0].DTINICIO;
+
+        log.info("Data integração Cronograma: ");
+        log.info("CODCOLIGADA: " + CODCOLIGADA);
+        log.info("IDPRJ: " + IDPRJ);
+        log.info("DATA_PERIODO: " + DATA_PERIODO);
+        log.info("tasks: ");
+        log.dir(tasks);
+
+
+        chamaApiLancaRealizado(CODCOLIGADA, IDPRJ, DATA_PERIODO, tasks)
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+function calculaPercentualConcluido(CODCOLIGADA, IDPRJ) {
+    try {
+        var query = "";
+        query += "SELECT ";
+        query += "     MTAREFA.CODCOLIGADA, ";
+        query += "     MTAREFA.IDPRJ, ";
+        query += "     MTAREFA.IDTRF, ";
+        query += "     MTAREFA.CODTRF, ";
+        query += "     MTAREFA.QUANTIDADE, ";
+        query += "     MTAREFA.VALOR, ";
+        query += "     CASE ";
+        query += "          WHEN SUM(MTRFREAL.PERCREALIZADO) IS NOT NULL THEN SUM(MTRFREAL.PERCREALIZADO) ";
+        query += "          ELSE 0 ";
+        query += "     END AS PERCREALIZADO ";
+        query += "FROM ";
+        query += "     MTAREFA ";
+        query += "     LEFT JOIN MTRFREAL ON MTAREFA.CODCOLIGADA = MTRFREAL.CODCOLIGADA ";
+        query += "     AND MTAREFA.IDPRJ = MTRFREAL.IDPRJ ";
+        query += "     AND MTAREFA.IDTRF = MTRFREAL.IDTRF ";
+        query += "WHERE ";
+        query += "     MTAREFA.CODCOLIGADA = ? ";
+        query += "     AND MTAREFA.IDPRJ = ? ";
+        query += "     AND MTAREFA.SERVICO = 1 ";
+        query += "     AND MTAREFA.TIPOPLANILHA = 1 ";
+        query += "GROUP BY ";
+        query += "     MTAREFA.CODCOLIGADA, ";
+        query += "     MTAREFA.IDPRJ, ";
+        query += "     MTAREFA.IDTRF, ";
+        query += "     MTAREFA.CODTRF, ";
+        query += "     MTAREFA.QUANTIDADE, ";
+        query += "     MTAREFA.VALOR ";
+        query += "ORDER BY ";
+        query += "     MTAREFA.IDTRF ";
+
+        var retorno = executaQuery(query, [
+            { type: "int", value: CODCOLIGADA },
+            { type: "int", value: IDPRJ },
+        ], "/jdbc/FluigRM");
+
+        return retorno;
+    } catch (error) {
+        throw error;
+    }
+}
+function consultaDataDoPeriodo(CODCOLIGADA, IDPRJ, IDPERIODO) {
+    try {
+        var query = "SELECT DTINICIO FROM MPERIODO WHERE CODCOLIGADA = ? AND IDPRJ = ? AND IDPERIODO = ?";
+        var retorno = executaQuery(query, [
+            { type: "int", value: CODCOLIGADA },
+            { type: "int", value: IDPRJ },
+            { type: "int", value: IDPERIODO },
+        ], "/jdbc/FluigRM");
+
+        return retorno;
+    } catch (error) {
+        throw error;
+    }
+}
+
+function chamaApiLancaRealizado(CODCOLIGADA, IDPRJ, DATA, LIST_TAREFAS) {
+    try {
+        var clientService = fluigAPI.getAuthorizeClientService();
+        var data = {
+            companyId: getValue("WKCompany") + '',
+            serviceCode: 'RM_REST',
+            endpoint: '/construction-projects/v1/accomplishedInput',
+            method: 'post',
+            params: {
+                "companyId": CODCOLIGADA,
+                "projectId": IDPRJ,
+                "accomplishedIn": DATA,
+                "tasks": LIST_TAREFAS
+            },
+            options: {
+                encoding: 'UTF-8',
+                mediaType: 'application/json',
+            },
+            headers: {
+                "Content-Type": 'application/json;charset=UTF-8'
+            }
+        }
+
+        var vo = clientService.invoke(JSON.stringify(data));
+
+        if (vo.getResult() == null || vo.getResult().isEmpty()) {
+            throw "Retorno está vazio";
+        }
+        else {
+            var result = vo.getResult();
+            log.info("result");
+            log.dir(result);
+            return result;
+        }
     } catch (error) {
         throw error;
     }
@@ -165,9 +261,9 @@ function getXML(CODCOLIGADA, IDPRJ, IDPERIODO, IDTRF, QUANTIDADE) {
     XML += '  <OnlineMode xmlns="http://www.totvs.com/">true</OnlineMode>';
     XML += '  <PrimaryKeyList xmlns="http://www.totvs.com/" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">';
     XML += '    <a:ArrayOfanyType>';
-    XML += '      <a:anyType i:type="b:short" xmlns:b="http://www.w3.org/2001/XMLSchema">'+CODCOLIGADA+'</a:anyType>';
-    XML += '      <a:anyType i:type="b:int" xmlns:b="http://www.w3.org/2001/XMLSchema">'+IDPRJ+'</a:anyType>';
-    XML += '      <a:anyType i:type="b:int" xmlns:b="http://www.w3.org/2001/XMLSchema">'+IDTRF+'</a:anyType>';
+    XML += '      <a:anyType i:type="b:short" xmlns:b="http://www.w3.org/2001/XMLSchema">' + CODCOLIGADA + '</a:anyType>';
+    XML += '      <a:anyType i:type="b:int" xmlns:b="http://www.w3.org/2001/XMLSchema">' + IDPRJ + '</a:anyType>';
+    XML += '      <a:anyType i:type="b:int" xmlns:b="http://www.w3.org/2001/XMLSchema">' + IDTRF + '</a:anyType>';
     XML += '      <a:anyType i:type="b:int" xmlns:b="http://www.w3.org/2001/XMLSchema">0</a:anyType>';
     XML += '      <a:anyType i:type="b:int" xmlns:b="http://www.w3.org/2001/XMLSchema">0</a:anyType>';
     XML += '    </a:ArrayOfanyType>';
@@ -196,36 +292,34 @@ function getXML(CODCOLIGADA, IDPRJ, IDPERIODO, IDTRF, QUANTIDADE) {
     XML += '  <UseJobMonitor xmlns="http://www.totvs.com/">false</UseJobMonitor>';
     XML += '  <UserName xmlns="http://www.totvs.com/">Gabriel.Persike</UserName>';
     XML += '  <WaitSchedule xmlns="http://www.totvs.com/">false</WaitSchedule>';
-    XML += '  <CodColigada>'+CODCOLIGADA+'</CodColigada>';
+    XML += '  <CodColigada>' + CODCOLIGADA + '</CodColigada>';
     XML += '  <ConsideraPert>false</ConsideraPert>';
     XML += '  <ConverterGrandeza>Quantidade</ConverterGrandeza>';
     XML += '  <Cronogramas xmlns:a="http://schemas.datacontract.org/2004/07/RM.Prj.Parametros">';
     XML += '    <a:PrjTipoCronogramaEnum>Medido</a:PrjTipoCronogramaEnum>';
     XML += '  </Cronogramas>';
     XML += '  <Grandeza>Quantidade</Grandeza>';
-    XML += '  <IdPrj>'+IDPRJ+'</IdPrj>';
+    XML += '  <IdPrj>' + IDPRJ + '</IdPrj>';
     XML += '  <Periodos xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">';
-    XML += '    <a:short>'+IDPERIODO+'</a:short>';
+    XML += '    <a:short>' + IDPERIODO + '</a:short>';
     XML += '  </Periodos>';
     XML += '  <Ratear>false</Ratear>';
     XML += '  <SomenteConverter>false</SomenteConverter>';
     XML += '  <UtilizaFormula>false</UtilizaFormula>';
     XML += '  <UtilizarPercentualConcluidoPert>false</UtilizarPercentualConcluidoPert>';
-    XML += '  <valor>'+QUANTIDADE+'</valor>';
+    XML += '  <valor>' + QUANTIDADE + '</valor>';
     XML += '</PrjLancMultiploParamsProc>';
 
     return XML;
 }
-function executeInsert(query, constraints, dataSource) {
-    var dataSource = dataSource;
-    var ic = new javax.naming.InitialContext();
-    var ds = ic.lookup(dataSource);
-
-    log.info("wkfGerencialEconomicoDeObra.servicetask10: executandoQuery");
-    log.info(query);
+function executaQuery(query, constraints, dataSorce) {
     try {
+        var dataSource = dataSorce;
+        var ic = new javax.naming.InitialContext();
+        var ds = ic.lookup(dataSource);
+
         var conn = ds.getConnection();
-        var stmt = conn.prepareStatement(query, Packages.java.sql.Statement.RETURN_GENERATED_KEYS);
+        var stmt = conn.prepareStatement(query);
 
         var counter = 1;
         for (var i = 0; i < constraints.length; i++) {
@@ -247,24 +341,42 @@ function executeInsert(query, constraints, dataSource) {
             counter++;
         }
 
-        log.info("wkfGerencialEconomicoDeObra.servicetask10: executandoQuery"+query.length)
+        var rs = stmt.executeQuery();
+        var columnCount = rs.getMetaData().getColumnCount();
+        var retorno = [];
 
-       var hasResultSet = stmt.execute();
-        if (hasResultSet) {
-            var rs = stmt.getResultSet();
-            if (rs.next()) {
-                var id = rs.getInt(1);
-                log.info("id");
-                log.dir(id);
-                return id;
+        while (rs.next()) {
+            var linha = {};
+            for (var j = 1; j < columnCount + 1; j++) {
+                linha[rs.getMetaData().getColumnName(j)] = rs.getObject(rs.getMetaData().getColumnName(j)) + "";
             }
+            retorno.push(linha);
         }
 
+        return retorno;
+
+    } catch (error) {
+        var msg = "";
+        // Try to extract useful message safely
+        if (error && error.javaException) {
+            msg = error.javaException.getMessage();
+        } else if (error && error.message) {
+            if (error.message.Error) {
+            } else {
+                msg = error.message;
+            }
 
 
-    } catch (e) {
-        log.error("ERRO==============> " + e.message);
-        throw e;
+        } else {
+            msg = String(error);
+        }
+
+        log.error("ERRO==============> " + msg);
+        log.error("Type of error: " + typeof error);
+        log.error("Type of msg: " + typeof msg);
+
+        // Safely rethrow as standard JS error
+        throw "Erro ao executar Dataset: " + msg;
     } finally {
         if (stmt != null) {
             stmt.close();

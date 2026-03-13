@@ -28,7 +28,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>wkfGerencialEconomicoDeObra</processId>
-      <version>30</version>
+      <version>47</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>32874</formId>
@@ -76,8 +76,8 @@
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>150</positionX>
-      <positionY>82</positionY>
+      <positionX>140</positionX>
+      <positionY>66</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -125,7 +125,7 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>550</positionX>
+      <positionX>440</positionX>
       <positionY>194</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
@@ -177,7 +177,7 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>530</positionX>
+      <positionX>440</positionX>
       <positionY>49</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
@@ -229,7 +229,7 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>140</positionX>
+      <positionX>110</positionX>
       <positionY>201</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
@@ -280,7 +280,7 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>620</positionX>
+      <positionX>510</positionX>
       <positionY>199</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
@@ -313,8 +313,8 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <automatic>true</automatic>
-      <positionX>400</positionX>
-      <positionY>178</positionY>
+      <positionX>300</positionX>
+      <positionY>185</positionY>
       <inhibitTransfer>false</inhibitTransfer>
       <stateType>1</stateType>
       <bpmnType>120</bpmnType>
@@ -352,8 +352,8 @@
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>770</positionX>
-      <positionY>227</positionY>
+      <positionX>630</positionX>
+      <positionY>211</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -377,7 +377,7 @@
         <companyId>1</companyId>
         <processId>wkfGerencialEconomicoDeObra</processId>
         <expressionOrder>1</expressionOrder>
-        <version>30</version>
+        <version>47</version>
         <sequence>19</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -389,7 +389,7 @@
         <companyId>1</companyId>
         <processId>wkfGerencialEconomicoDeObra</processId>
         <expressionOrder>2</expressionOrder>
-        <version>30</version>
+        <version>47</version>
         <sequence>19</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -536,62 +536,158 @@
         var IDPRJ = hAPI.getCardValue(&quot;IDPRJ&quot;);
         var IDPERIODO = hAPI.getCardValue(&quot;IDPERIODO&quot;);
 
+        // Busca QUANTIDADE e VALOR_UNITARIO da Tarefa, e também o PERCENTUAL_REALIZADO no ultimo Periodo
+        var tarefasCronograma = calculaPercentualConcluido(CODCOLIGADA, IDPRJ);
+        log.info(&quot;tarefasCronograma&quot;);
+        log.dir(tarefasCronograma);
+
         var cardData = hAPI.getCardData(getValue(&quot;WKNumProces&quot;));
-
-        var planilhaDeProducao = [];
+        var tasks = [];
         var indexes = hAPI.getChildrenIndexes(&quot;tableProducao&quot;);
-
-        for (var i = 0; i &lt; indexes.length &amp;&amp; i&lt;10; i++) {
+        for (var i = 0; i &lt; indexes.length; i++) {
             var id = indexes[i];
 
-            var id_tarefa = cardData.get(&quot;id_tarefa&quot; + &quot;___&quot; + id);
-            var cod_tarefa = cardData.get(&quot;cod_tarefa&quot; + &quot;___&quot; + id);
-            var descricao_tarefa = cardData.get(&quot;des_tarefa&quot; + &quot;___&quot; + id);
-            var un_tarefa = cardData.get(&quot;un_medida&quot; + &quot;___&quot; + id);
-            var quantidade_medida_tarefa = cardData.get(&quot;quantidade&quot; + &quot;___&quot; + id);
-            var valor_unitario_tarefa = cardData.get(&quot;vlr_unitario&quot; + &quot;___&quot; + id);
+            var tarefa = {
+                id_tarefa: cardData.get(&quot;id_tarefa&quot; + &quot;___&quot; + id),
+                cod_tarefa: cardData.get(&quot;cod_tarefa&quot; + &quot;___&quot; + id),
+                descricao_tarefa: cardData.get(&quot;des_tarefa&quot; + &quot;___&quot; + id),
+                un_tarefa: cardData.get(&quot;un_medida&quot; + &quot;___&quot; + id),
+                quantidade_medida_tarefa: cardData.get(&quot;quantidade&quot; + &quot;___&quot; + id),
+                valor_unitario_tarefa: cardData.get(&quot;vlr_unitario&quot; + &quot;___&quot; + id),
+            }
 
-            planilhaDeProducao.push({
-                id_tarefa: id_tarefa,
-                cod_tarefa: cod_tarefa,
-                descricao_tarefa: descricao_tarefa,
-                un_tarefa: un_tarefa,
-                quantidade_medida_tarefa: quantidade_medida_tarefa,
-                valor_unitario_tarefa: valor_unitario_tarefa
-            });
-        }
+            for (var j = 0; j &lt; tarefasCronograma.length; j++) {
+                var e = tarefasCronograma[j];
+                if (e.IDTRF == tarefa.id_tarefa) {
+                    tarefa.per_realizado = e.PERCREALIZADO;
+                    tarefa.quantidade_total = e.QUANTIDADE;
+                }
+            }
 
-        for (var i = 0; i &lt; planilhaDeProducao.length; i++) {
-            log.info(&quot;I:&quot;+i);
-            var tarefa = planilhaDeProducao[i];
-          
-            var query = &quot;INSERT INTO MTRFREAL (CODCOLIGADA,IDPRJ,IDTRF,NUMPERIODO, QUANTREAL, CAMPOINFORMADO) &quot;
-                query += &quot;VALUES &quot;;
-                query += &quot;(?,?,?,?,?,?)&quot;;
+            var PERCENTUAL_REALIZADO_ACUMULADO = tarefa.per_realizado;
+            var PERCENTUAL_REALIZADO_APONTADO = ((tarefa.quantidade_medida_tarefa * 100) / tarefa.quantidade_total);
+            log.info(PERCENTUAL_REALIZADO_ACUMULADO)
+            log.info(PERCENTUAL_REALIZADO_APONTADO)
 
-                executeInsert(query, [
-                    {type:&quot;int&quot;, value:CODCOLIGADA},
-                    {type:&quot;int&quot;, value:IDPRJ},
-                    {type:&quot;int&quot;, value:tarefa.id_tarefa},
-                    {type:&quot;int&quot;, value:IDPERIODO},
-                    {type:&quot;float&quot;, value:tarefa.quantidade_medida_tarefa},
-                    {type:&quot;text&quot;, value:&quot;Q&quot;},//Quantidade
-                ], &quot;/jdbc/FluigRM&quot;);
-          
-          
-            // var XML = getXML(CODCOLIGADA, IDPRJ, IDPERIODO, tarefa.id_tarefa, tarefa.quantidade_medida_tarefa);
-            // var ds = DatasetFactory.getDataset(&quot;dsAtualizaItemPlanejamentoGerencialEconomico&quot;,null,[
-            //     DatasetFactory.createConstraint(&quot;CODCOLIGADA&quot;, CODCOLIGADA,CODCOLIGADA,ConstraintType.MUST),
-            //     DatasetFactory.createConstraint(&quot;XML&quot;, XML,XML,ConstraintType.MUST),
-            // ],null);
-
-            // var STATUS = ds.getValue(0,&quot;STATUS&quot;);
-            // if (STATUS != &quot;SUCCESS&quot;) {
-            //     throw ds.getValue(0,&quot;MENSAGEM&quot;);
-            // }
+            tarefa.per_realizado = (parseFloat(PERCENTUAL_REALIZADO_ACUMULADO) + parseFloat(PERCENTUAL_REALIZADO_APONTADO));
+            tasks.push({
+                &quot;taskId&quot;: tarefa.id_tarefa,
+                &quot;accumulatedPercentageCompleted&quot;: tarefa.per_realizado.toFixed(2)
+            })
         }
 
 
+        var DATA_PERIODO = consultaDataDoPeriodo(CODCOLIGADA, IDPRJ, IDPERIODO)[0].DTINICIO;
+
+        log.info(&quot;Data integração Cronograma: &quot;);
+        log.info(&quot;CODCOLIGADA: &quot; + CODCOLIGADA);
+        log.info(&quot;IDPRJ: &quot; + IDPRJ);
+        log.info(&quot;DATA_PERIODO: &quot; + DATA_PERIODO);
+        log.info(&quot;tasks: &quot;);
+        log.dir(tasks);
+
+
+        chamaApiLancaRealizado(CODCOLIGADA, IDPRJ, DATA_PERIODO, tasks)
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+function calculaPercentualConcluido(CODCOLIGADA, IDPRJ) {
+    try {
+        var query = &quot;&quot;;
+        query += &quot;SELECT &quot;;
+        query += &quot;     MTAREFA.CODCOLIGADA, &quot;;
+        query += &quot;     MTAREFA.IDPRJ, &quot;;
+        query += &quot;     MTAREFA.IDTRF, &quot;;
+        query += &quot;     MTAREFA.CODTRF, &quot;;
+        query += &quot;     MTAREFA.QUANTIDADE, &quot;;
+        query += &quot;     MTAREFA.VALOR, &quot;;
+        query += &quot;     CASE &quot;;
+        query += &quot;          WHEN SUM(MTRFREAL.PERCREALIZADO) IS NOT NULL THEN SUM(MTRFREAL.PERCREALIZADO) &quot;;
+        query += &quot;          ELSE 0 &quot;;
+        query += &quot;     END AS PERCREALIZADO &quot;;
+        query += &quot;FROM &quot;;
+        query += &quot;     MTAREFA &quot;;
+        query += &quot;     LEFT JOIN MTRFREAL ON MTAREFA.CODCOLIGADA = MTRFREAL.CODCOLIGADA &quot;;
+        query += &quot;     AND MTAREFA.IDPRJ = MTRFREAL.IDPRJ &quot;;
+        query += &quot;     AND MTAREFA.IDTRF = MTRFREAL.IDTRF &quot;;
+        query += &quot;WHERE &quot;;
+        query += &quot;     MTAREFA.CODCOLIGADA = ? &quot;;
+        query += &quot;     AND MTAREFA.IDPRJ = ? &quot;;
+        query += &quot;     AND MTAREFA.SERVICO = 1 &quot;;
+        query += &quot;     AND MTAREFA.TIPOPLANILHA = 1 &quot;;
+        query += &quot;GROUP BY &quot;;
+        query += &quot;     MTAREFA.CODCOLIGADA, &quot;;
+        query += &quot;     MTAREFA.IDPRJ, &quot;;
+        query += &quot;     MTAREFA.IDTRF, &quot;;
+        query += &quot;     MTAREFA.CODTRF, &quot;;
+        query += &quot;     MTAREFA.QUANTIDADE, &quot;;
+        query += &quot;     MTAREFA.VALOR &quot;;
+        query += &quot;ORDER BY &quot;;
+        query += &quot;     MTAREFA.IDTRF &quot;;
+
+        var retorno = executaQuery(query, [
+            { type: &quot;int&quot;, value: CODCOLIGADA },
+            { type: &quot;int&quot;, value: IDPRJ },
+        ], &quot;/jdbc/FluigRM&quot;);
+
+        return retorno;
+    } catch (error) {
+        throw error;
+    }
+}
+function consultaDataDoPeriodo(CODCOLIGADA, IDPRJ, IDPERIODO) {
+    try {
+        var query = &quot;SELECT DTINICIO FROM MPERIODO WHERE CODCOLIGADA = ? AND IDPRJ = ? AND IDPERIODO = ?&quot;;
+        var retorno = executaQuery(query, [
+            { type: &quot;int&quot;, value: CODCOLIGADA },
+            { type: &quot;int&quot;, value: IDPRJ },
+            { type: &quot;int&quot;, value: IDPERIODO },
+        ], &quot;/jdbc/FluigRM&quot;);
+
+        return retorno;
+    } catch (error) {
+        throw error;
+    }
+}
+
+function chamaApiLancaRealizado(CODCOLIGADA, IDPRJ, DATA, LIST_TAREFAS) {
+    try {
+        var clientService = fluigAPI.getAuthorizeClientService();
+        var data = {
+            companyId: getValue(&quot;WKCompany&quot;) + &apos;&apos;,
+            serviceCode: &apos;RM_REST&apos;,
+            endpoint: &apos;/construction-projects/v1/accomplishedInput&apos;,
+            method: &apos;post&apos;,
+            params: {
+                &quot;companyId&quot;: CODCOLIGADA,
+                &quot;projectId&quot;: IDPRJ,
+                &quot;accomplishedIn&quot;: DATA,
+                &quot;tasks&quot;: LIST_TAREFAS
+            },
+            options: {
+                encoding: &apos;UTF-8&apos;,
+                mediaType: &apos;application/json&apos;,
+            },
+            headers: {
+                &quot;Content-Type&quot;: &apos;application/json;charset=UTF-8&apos;
+            }
+        }
+
+        var vo = clientService.invoke(JSON.stringify(data));
+
+        if (vo.getResult() == null || vo.getResult().isEmpty()) {
+            throw &quot;Retorno está vazio&quot;;
+        }
+        else {
+            var result = vo.getResult();
+            log.info(&quot;result&quot;);
+            log.dir(result);
+            return result;
+        }
     } catch (error) {
         throw error;
     }
@@ -696,9 +792,9 @@ function getXML(CODCOLIGADA, IDPRJ, IDPERIODO, IDTRF, QUANTIDADE) {
     XML += &apos;  &lt;OnlineMode xmlns=&quot;http://www.totvs.com/&quot;&gt;true&lt;/OnlineMode&gt;&apos;;
     XML += &apos;  &lt;PrimaryKeyList xmlns=&quot;http://www.totvs.com/&quot; xmlns:a=&quot;http://schemas.microsoft.com/2003/10/Serialization/Arrays&quot;&gt;&apos;;
     XML += &apos;    &lt;a:ArrayOfanyType&gt;&apos;;
-    XML += &apos;      &lt;a:anyType i:type=&quot;b:short&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&apos;+CODCOLIGADA+&apos;&lt;/a:anyType&gt;&apos;;
-    XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&apos;+IDPRJ+&apos;&lt;/a:anyType&gt;&apos;;
-    XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&apos;+IDTRF+&apos;&lt;/a:anyType&gt;&apos;;
+    XML += &apos;      &lt;a:anyType i:type=&quot;b:short&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&apos; + CODCOLIGADA + &apos;&lt;/a:anyType&gt;&apos;;
+    XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&apos; + IDPRJ + &apos;&lt;/a:anyType&gt;&apos;;
+    XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&apos; + IDTRF + &apos;&lt;/a:anyType&gt;&apos;;
     XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;0&lt;/a:anyType&gt;&apos;;
     XML += &apos;      &lt;a:anyType i:type=&quot;b:int&quot; xmlns:b=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;0&lt;/a:anyType&gt;&apos;;
     XML += &apos;    &lt;/a:ArrayOfanyType&gt;&apos;;
@@ -727,36 +823,34 @@ function getXML(CODCOLIGADA, IDPRJ, IDPERIODO, IDTRF, QUANTIDADE) {
     XML += &apos;  &lt;UseJobMonitor xmlns=&quot;http://www.totvs.com/&quot;&gt;false&lt;/UseJobMonitor&gt;&apos;;
     XML += &apos;  &lt;UserName xmlns=&quot;http://www.totvs.com/&quot;&gt;Gabriel.Persike&lt;/UserName&gt;&apos;;
     XML += &apos;  &lt;WaitSchedule xmlns=&quot;http://www.totvs.com/&quot;&gt;false&lt;/WaitSchedule&gt;&apos;;
-    XML += &apos;  &lt;CodColigada&gt;&apos;+CODCOLIGADA+&apos;&lt;/CodColigada&gt;&apos;;
+    XML += &apos;  &lt;CodColigada&gt;&apos; + CODCOLIGADA + &apos;&lt;/CodColigada&gt;&apos;;
     XML += &apos;  &lt;ConsideraPert&gt;false&lt;/ConsideraPert&gt;&apos;;
     XML += &apos;  &lt;ConverterGrandeza&gt;Quantidade&lt;/ConverterGrandeza&gt;&apos;;
     XML += &apos;  &lt;Cronogramas xmlns:a=&quot;http://schemas.datacontract.org/2004/07/RM.Prj.Parametros&quot;&gt;&apos;;
     XML += &apos;    &lt;a:PrjTipoCronogramaEnum&gt;Medido&lt;/a:PrjTipoCronogramaEnum&gt;&apos;;
     XML += &apos;  &lt;/Cronogramas&gt;&apos;;
     XML += &apos;  &lt;Grandeza&gt;Quantidade&lt;/Grandeza&gt;&apos;;
-    XML += &apos;  &lt;IdPrj&gt;&apos;+IDPRJ+&apos;&lt;/IdPrj&gt;&apos;;
+    XML += &apos;  &lt;IdPrj&gt;&apos; + IDPRJ + &apos;&lt;/IdPrj&gt;&apos;;
     XML += &apos;  &lt;Periodos xmlns:a=&quot;http://schemas.microsoft.com/2003/10/Serialization/Arrays&quot;&gt;&apos;;
-    XML += &apos;    &lt;a:short&gt;&apos;+IDPERIODO+&apos;&lt;/a:short&gt;&apos;;
+    XML += &apos;    &lt;a:short&gt;&apos; + IDPERIODO + &apos;&lt;/a:short&gt;&apos;;
     XML += &apos;  &lt;/Periodos&gt;&apos;;
     XML += &apos;  &lt;Ratear&gt;false&lt;/Ratear&gt;&apos;;
     XML += &apos;  &lt;SomenteConverter&gt;false&lt;/SomenteConverter&gt;&apos;;
     XML += &apos;  &lt;UtilizaFormula&gt;false&lt;/UtilizaFormula&gt;&apos;;
     XML += &apos;  &lt;UtilizarPercentualConcluidoPert&gt;false&lt;/UtilizarPercentualConcluidoPert&gt;&apos;;
-    XML += &apos;  &lt;valor&gt;&apos;+QUANTIDADE+&apos;&lt;/valor&gt;&apos;;
+    XML += &apos;  &lt;valor&gt;&apos; + QUANTIDADE + &apos;&lt;/valor&gt;&apos;;
     XML += &apos;&lt;/PrjLancMultiploParamsProc&gt;&apos;;
 
     return XML;
 }
-function executeInsert(query, constraints, dataSource) {
-    var dataSource = dataSource;
-    var ic = new javax.naming.InitialContext();
-    var ds = ic.lookup(dataSource);
-
-    log.info(&quot;wkfGerencialEconomicoDeObra.servicetask10: executandoQuery&quot;);
-    log.info(query);
+function executaQuery(query, constraints, dataSorce) {
     try {
+        var dataSource = dataSorce;
+        var ic = new javax.naming.InitialContext();
+        var ds = ic.lookup(dataSource);
+
         var conn = ds.getConnection();
-        var stmt = conn.prepareStatement(query, Packages.java.sql.Statement.RETURN_GENERATED_KEYS);
+        var stmt = conn.prepareStatement(query);
 
         var counter = 1;
         for (var i = 0; i &lt; constraints.length; i++) {
@@ -778,24 +872,42 @@ function executeInsert(query, constraints, dataSource) {
             counter++;
         }
 
-        log.info(&quot;wkfGerencialEconomicoDeObra.servicetask10: executandoQuery&quot;+query.length)
+        var rs = stmt.executeQuery();
+        var columnCount = rs.getMetaData().getColumnCount();
+        var retorno = [];
 
-       var hasResultSet = stmt.execute();
-        if (hasResultSet) {
-            var rs = stmt.getResultSet();
-            if (rs.next()) {
-                var id = rs.getInt(1);
-                log.info(&quot;id&quot;);
-                log.dir(id);
-                return id;
+        while (rs.next()) {
+            var linha = {};
+            for (var j = 1; j &lt; columnCount + 1; j++) {
+                linha[rs.getMetaData().getColumnName(j)] = rs.getObject(rs.getMetaData().getColumnName(j)) + &quot;&quot;;
             }
+            retorno.push(linha);
         }
 
+        return retorno;
+
+    } catch (error) {
+        var msg = &quot;&quot;;
+        // Try to extract useful message safely
+        if (error &amp;&amp; error.javaException) {
+            msg = error.javaException.getMessage();
+        } else if (error &amp;&amp; error.message) {
+            if (error.message.Error) {
+            } else {
+                msg = error.message;
+            }
 
 
-    } catch (e) {
-        log.error(&quot;ERRO==============&gt; &quot; + e.message);
-        throw e;
+        } else {
+            msg = String(error);
+        }
+
+        log.error(&quot;ERRO==============&gt; &quot; + msg);
+        log.error(&quot;Type of error: &quot; + typeof error);
+        log.error(&quot;Type of msg: &quot; + typeof msg);
+
+        // Safely rethrow as standard JS error
+        throw &quot;Erro ao executar Dataset: &quot; + msg;
     } finally {
         if (stmt != null) {
             stmt.close();
@@ -812,7 +924,7 @@ function executeInsert(query, constraints, dataSource) {
     <SwimLane>
       <color>FFFFFF</color>
       <height>290</height>
-      <width>831</width>
+      <width>721</width>
       <positionX>10</positionX>
       <positionY>10</positionY>
       <stateName>Pool</stateName>
@@ -828,7 +940,7 @@ function executeInsert(query, constraints, dataSource) {
     <SwimLane>
       <color>9F9F9F</color>
       <height>145</height>
-      <width>801</width>
+      <width>691</width>
       <positionX>40</positionX>
       <positionY>10</positionY>
       <stateName>Reporter</stateName>
@@ -844,7 +956,7 @@ function executeInsert(query, constraints, dataSource) {
     <SwimLane>
       <color>C0C0C0</color>
       <height>145</height>
-      <width>801</width>
+      <width>691</width>
       <positionX>40</positionX>
       <positionY>155</positionY>
       <stateName>Assignee</stateName>

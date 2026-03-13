@@ -91,20 +91,13 @@ function createDataset(fields, constraints, sortFields) {
         query += " ";
         query += "    ) ";
         query += " ";
-        query += "    SELECT ";
+        query += "    SELECT DISTINCT";
         query += "		planilha.CODCOLIGADA AS cod_coligada ";
         query += "        ,planilha.IDPRJ AS id_projeto ";
-        query += "        ,cronograma.periodo AS IDPERIODO ";
-        query += "        ,CODPRJ AS cod_projeto ";
-        query += "        ,DESCPROJETO AS des_projeto ";
         query += "        ,CASE WHEN TIPOPLANILHA = 0 THEN 'ATIVIDADES' ";
         query += "            ELSE 'SERVIÇOS' ";
         query += "            END AS tipo_planilha ";
-        query += "        ,RESPONSAVEL AS des_responsavel ";
-        query += "        ,ENGPLANEJAMENTO AS des_eng_planejamento ";
         query += "        ,CLASSIFICACAO AS des_classificacao ";
-        query += "        ,CODCCUSTO AS cod_centro_custo ";
-        query += "        ,NOMECCUSTO AS des_centro_custo ";
         query += "        ,planilha.IDTRF AS id_tarefa ";
         query += "        ,CODTRF AS cod_tarefa ";
         query += "        ,NIVEL AS num_nivel ";
@@ -118,21 +111,6 @@ function createDataset(fields, constraints, sortFields) {
         query += "        ,PERCOBRA AS per_obra ";
         query += "        ,PERCPROJETO AS per_projeto ";
         query += "        ,PERCCONCLUIDO AS per_concluido ";
-        query += "        ,USUARIOULTIMALATERACAO AS des_usuario_ult_alteracao ";
-        query += "        ,DATAULTIMAALTERACAO AS dt_hr_ult_alteracao ";
-        query += "        ,DT_PERIODO AS dt_periodo ";
-        query += "        ,BASE AS vlr_base ";
-        query += "        ,PREVISTO AS vlr_previsto ";
-        query += "        ,MEDIDO AS vlr_medido ";
-        query += "        ,REALIZADO AS vlr_realizado ";
-        query += "        ,CODCMP AS cod_composicao ";
-        query += "        ,DESCCMP AS des_composicao ";
-        query += "        ,CODISM AS cod_insumo_local ";
-        query += "        ,DESCism AS des_insumo_local ";
-        query += "        ,CUSTOUNIT AS vlr_custo_unitario ";
-        query += "        ,CUSTOTOTAL AS vlr_custo_total ";
-        query += "        ,BDI AS per_bdi ";
-        query += "        ,FASEDOPLANEJAMENTO AS des_fase_planejamento ";
         query += " ";
         query += "    FROM CastilhoRM.dbo.ZVWPLANILHA planilha ";
         query += " ";
@@ -143,7 +121,7 @@ function createDataset(fields, constraints, sortFields) {
         query += " ";
         query += "    WHERE planilha.CODCOLIGADA = ? AND CLASSIFICACAO = 'Plan e Acomp'  and planilha.idprj = ? and TIPOPLANILHA = 1 and SERVICO = 1 ";
         query += " ";
-        query += "    ORDER BY planilha.CODTRF, NIVEL, DT_PERIODO ";
+        query += "    ORDER BY planilha.CODTRF, NIVEL ";
 
         var retorno = executaQuery(query,[
             {type:"int", value:constraints.CODCOLIGADA},

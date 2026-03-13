@@ -3,6 +3,7 @@ export interface TarefasInterface  {
     id_tarefa:number;
     cod_tarefa:string;
     des_tarefa:string;
+    quantidade_total:number;
     vlr_unitario:number;
     un_medida:string;
     quantidade:number|null;
