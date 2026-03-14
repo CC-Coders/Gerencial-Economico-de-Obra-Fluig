@@ -16,7 +16,7 @@ dialog {
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   padding: 0.5rem;
-  top: 5rem;
+  top: 2rem;
 }
 
 @media (min-width: 768px) {
@@ -30,7 +30,7 @@ dialog {
 .table-container {
   width: 100%;
   overflow-x: auto;
-   max-height: 500px; /* Set a maximum height to enable vertical scrolling */
+  max-height: 50vh; /* Set a maximum height to enable vertical scrolling */
   overflow-y: auto; /* Add scrollbars when content exceeds max-height */
   overflow-x: auto; /* Optional: for horizontal scrolling */
 }
