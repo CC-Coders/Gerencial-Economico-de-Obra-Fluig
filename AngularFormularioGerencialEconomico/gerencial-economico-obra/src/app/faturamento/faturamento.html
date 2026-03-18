@@ -1,0 +1,54 @@
+<div id="faturamento">
+    <div>
+        <h1 style="display: flex; justify-content: space-between;">
+            <div>
+                <mat-icon style="color:#ffcd2a">attach_money</mat-icon>
+                FATURAMENTO
+            </div>
+            <b>Total: {{0 | currency:"BRL"}}</b>
+        </h1>
+    </div>
+    <div class="table-container">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>MED.</th>
+                    <th>MÊS/ANO</th>
+                    <th>PERÍODO</th>
+                    <th>VALOR EMPENHO</th>
+                    <th>DATA NF</th>
+                    <th>Nº NF</th>
+                    <th>MEDIÇÃO (PI)</th>
+                    <th>REAJUSTE (r)</th>
+                    <th>PI + R</th>
+                    <th>PI + R ACUM.</th>
+                    <th>PREV. RECEB.</th>
+                    <th>RECEB. BRUTO</th>
+                    <th>DATA RECEB.</th>
+                    <th>LÍQUIDO RECEBIDO</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(row of faturamento; track row){
+                    <tr>
+                        <td>{{row.MEDICAO}}</td>
+                        <td>{{row.COMPETENCIA}}</td>
+                        <td>  - </td>
+                        <td>  - </td>
+                        <td>{{row.EMISSAO ? (row.EMISSAO | date:'dd/MM/yyyy') : '' }}</td>
+                        <td>{{row.NFISCAL}}</td>
+                        <td>{{row.VALOR_PI | currency:"BRL"}}</td>
+                        <td>{{row.VALOR_R | currency:"BRL"}}</td>
+                        <td>{{row.VALOR_PI_R | currency:"BRL"}}</td>
+                        <td> - </td>
+                        <td>{{row.DATAPREV ? (row.DATAPREV | date:'dd/MM/yyyy') : '' }}</td>
+                        <td>{{row.VALORBRUTO | currency:"BRL"}}</td>
+                        <td>{{row.DATAREC && row.DATAREC != "null" ? (row.DATAREC | date:'dd/MM/yyyy') : '' }}</td>
+                        <td>{{row.LIQREC | currency:"BRL"}}</td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
