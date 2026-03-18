@@ -1,0 +1,51 @@
+<div id="depesas-indiretas">
+    <div>
+        <h1 style="display: flex; justify-content: space-between;">
+            <div>
+                <mat-icon style="color:#ffcd2a">account_balance_wallet</mat-icon>
+                DESPESAS INDIRETAS
+            </div>
+            <b>Total: {{valorTotal | currency:"BRL"}}</b>
+        </h1>
+    </div>
+    <div>
+        <div class="row">
+            @for(classe of despesasIndiretas; track classe.classe){
+            <div class="col-md-4">
+                <app-card [title]="classe.classe" (click)="onOpenDetalhes(classe.classe)">
+                    <h3>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                {{ calculaTotal(classe.rows) | currency:"BRL"}}
+                            </div>
+                            <div>
+                                <mat-icon>visibility</mat-icon>
+                            </div>
+                        </div>
+                    </h3>
+                    <small>{{classe.rows.length}} Lançamentos</small>
+                </app-card>
+            </div>
+            }
+            <div class="col-md-4">
+                <app-card title="Folha" (click)="onOpenDetalhes('Folha')">
+                    <h3>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                {{ calculaTotal(folhaIndireto) | currency:"BRL"}}
+                            </div>
+                            <div>
+                                <mat-icon>visibility</mat-icon>
+                            </div>
+                        </div>
+                    </h3>
+                    <small>{{folhaIndireto.length}} Lançamentos</small>
+                </app-card>
+            </div>
+        </div>
+    </div>
+    @if (isDetalhesOpen==true){
+    <app-detalhes-despesas [title]="titleDetalhes" [permiteIndireto]="false" [data]="dataDetalhes"
+        (close)="onCloseDetalhes()" />
+    }
+</div>
