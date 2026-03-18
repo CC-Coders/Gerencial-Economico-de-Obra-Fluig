@@ -14,16 +14,20 @@
   <app-menu-item
     ICON_NAME="attach_money"
     NAME="Faturamento"
-    [disabled]=true
     [isActive]="activeMenu == 'Faturamento'"
     (click)="onSelectMenu('Faturamento')"
   />
   <app-menu-item
     ICON_NAME="inventory_2"
     NAME="Estoque"
-    [disabled]=true
     [isActive]="activeMenu == 'Estoque'"
     (click)="onSelectMenu('Estoque')"
+  />
+  <app-menu-item
+    ICON_NAME="groups"
+    NAME="Efetivo"
+    [isActive]="activeMenu == 'Efetivo'"
+    (click)="onSelectMenu('Efetivo')"
   />
   <app-menu-item
     ICON_NAME="trending_down"
@@ -34,16 +38,8 @@
   <app-menu-item
     ICON_NAME="account_balance_wallet"
     NAME="Desp. Indiretas"
-    [disabled]=true
-    [isActive]="activeMenu == 'Desp. Indiretas'"
-    (click)="onSelectMenu('Desp. Indiretas')"
-  />
-  <app-menu-item
-    ICON_NAME="groups"
-    NAME="Efetivo"
-    [disabled]=true
-    [isActive]="activeMenu == 'Efetivo'"
-    (click)="onSelectMenu('Efetivo')"
+    [isActive]="activeMenu == 'Despesas Indiretas'"
+    (click)="onSelectMenu('Despesas Indiretas')"
   />
   <app-menu-item
     ICON_NAME="agriculture"
@@ -73,7 +69,7 @@
     [isActive]="activeMenu == 'Prevtri'"
     (click)="onSelectMenu('Prevtri')"
   />
-  <app-menu-item
+  <!-- <app-menu-item
     ICON_NAME="handshake"
     NAME="Faturamento Cons."
     [disabled]=true
@@ -86,7 +82,7 @@
     [disabled]=true
     [isActive]="activeMenu == 'Equilibrio Cons.'"
     (click)="onSelectMenu('Equilibrio Cons.')"
-  />
+  /> -->
   <app-menu-item
     ICON_NAME="assignment_turned_in"
     NAME="Compromisso"

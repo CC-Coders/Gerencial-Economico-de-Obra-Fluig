@@ -4,7 +4,7 @@
     <aside style="width: 25%;">
       <app-menu  (selectMenu)="changeActiveMenu($event)" [activeMenu]="activeMenu" />
     </aside>
-    <main style="width: 100%;">
+    <main style="width: 75%;">
 
       
       @if(activeMenu == "Dados Gerais"){
@@ -15,6 +15,18 @@
       }
       @if(activeMenu == "Despesas Economicas"){
         <app-despesas-economicas/>
+      }
+      @if(activeMenu == "Estoque"){
+        <app-estoque/>
+      }
+      @if(activeMenu == "Despesas Indiretas"){
+        <app-despesas-indiretas/>
+      }
+      @if(activeMenu == "Efetivo"){
+        <app-efetivo/>
+      }
+      @if(activeMenu == "Faturamento"){
+        <app-faturamento/>
       }
 
     </main>    

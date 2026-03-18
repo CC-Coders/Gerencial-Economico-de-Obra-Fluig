@@ -19,6 +19,7 @@
     "@angular/material": "~21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@ng-select/ng-select": "^21.5.2",
     "ng-currency": "^1.2.9",
     "ng2-currency-mask": "^13.0.3",
     "oauth-signature": "^1.5.0",

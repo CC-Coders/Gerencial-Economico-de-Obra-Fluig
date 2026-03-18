@@ -6,10 +6,14 @@ import { ProducaoService } from './producao/producao.service';
 import { DadosGeraisService } from './dados-gerais/dados-gerais.service';
 import { FluigForm } from './fluig.service.ts/fluigForm.service';
 import { DespesasEconomicas } from './despesas-economicas/despesas-economicas';
+import { Estoque } from './estoque/estoque';
+import { DespesasIndiretas } from './despesas-indiretas/despesas-indiretas';
+import { Efetivo } from './efetivo/efetivo';
+import { Faturamento } from './faturamento/faturamento';
 
 @Component({
   selector: 'app-root',
-  imports: [Menu, Producao, DadosGerais, DespesasEconomicas],
+  imports: [Menu, Producao, DadosGerais, DespesasEconomicas, Estoque, DespesasIndiretas,Efetivo, Faturamento],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -21,7 +25,7 @@ export class App {
     private fluigForm:FluigForm,
   ){}
   // activeMenu = "Dados Gerais";
-  activeMenu = "Despesas Economicas";
+  activeMenu = "Faturamento";
 
   ngOnInit(){
       this.dadosGeraisService.loadBacklog();

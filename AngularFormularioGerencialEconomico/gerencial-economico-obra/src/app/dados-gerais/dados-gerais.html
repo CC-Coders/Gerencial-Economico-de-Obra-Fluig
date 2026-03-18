@@ -3,47 +3,18 @@
     <h1> <mat-icon style="color:#ffcd2a">info</mat-icon> Dados Gerais da Obra</h1>
 
     @if(atividade != 0 && atividade != 4){
-        <div class="row">
-            <div class="col-md-3"></div>
-            <div class="col-md-3">
-                <button class="btn btn-success btn-block" (click)="aprovar()" >Aprovar</button>
-            </div>
-            <div class="col-md-3">
-                <button class="btn btn-danger btn-block" (click)="reprovar()">Reprovar</button>
-            </div>
-        </div>
-    }
-
     <div class="row">
+        <div class="col-md-3"></div>
         <div class="col-md-3">
-            <label for="">Coligada</label>
-            <br>
-            <select name="COLIGADA" id="COLIGADA" (change)="saveFormField($event, 'CODCOLIGADA')" [(ngModel)]="CODCOLIGADA" fieldName="CODCOLIGADA">
-                <option value=""></option>
-                <option value="1">Castilho</option>
-                <option value="12">Dromos</option>
-                <option value="13">Epya</option>
-            </select>
+            <button class="btn btn-success btn-block" (click)="aprovar()">Aprovar</button>
         </div>
         <div class="col-md-3">
-            <label for="">CODCCUSTO</label>
-            <br>
-            <select name="CODCCUSTO" id="CODCCUSTO" (change)="saveFormField($event, 'CODCCUSTO')" [(ngModel)]="CODCCUSSTO" fieldName="CODCCUSTO">
-                <option value=""></option>
-                <option value="1.2.066">1.2.066</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label for="">IDPRJ</label>
-            <br>
-            <input name="IDPRJ" id="IDPRJ"  (change)="saveFormField($event, 'IDPRJ')" [(ngModel)]="IDPRJ" fieldName="IDPRJ" />
-        </div>
-        <div class="col-md-3">
-            <label for="">IDPERIODO</label>
-            <br>
-            <input name="IDPERIODO" id="IDPERIODO" (change)="saveFormField($event, 'IDPERIODO')"  [(ngModel)]="IDPERIODO" fieldName="IDPERIODO" />
+            <button class="btn btn-danger btn-block" (click)="reprovar()">Reprovar</button>
         </div>
     </div>
+    }
+
+
     <div class="row flexRow">
         <div class="col-md-4 column">
             <app-card title="Cliente">
@@ -135,6 +106,41 @@
                     {{backlog.vlr_aditivos_medido | currency:"BRL"}}
                 </b>
             </app-card>
+        </div>
+    </div>
+
+    <div class="row" style="display: none;">
+        <div class="col-md-3">
+            <label for="">Coligada</label>
+            <br>
+            <select name="COLIGADA" id="COLIGADA" (change)="saveFormField($event, 'CODCOLIGADA')"
+                [(ngModel)]="CODCOLIGADA" fieldName="CODCOLIGADA">
+                <option value=""></option>
+                <option value="1">Castilho</option>
+                <option value="12">Dromos</option>
+                <option value="13">Epya</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="">CODCCUSTO</label>
+            <br>
+            <select name="CODCCUSTO" id="CODCCUSTO" (change)="saveFormField($event, 'CODCCUSTO')"
+                [(ngModel)]="CODCCUSSTO" fieldName="CODCCUSTO">
+                <option value=""></option>
+                <option value="1.2.066">1.2.066</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="">IDPRJ</label>
+            <br>
+            <input name="IDPRJ" id="IDPRJ" (change)="saveFormField($event, 'IDPRJ')" [(ngModel)]="IDPRJ"
+                fieldName="IDPRJ" />
+        </div>
+        <div class="col-md-3">
+            <label for="">IDPERIODO</label>
+            <br>
+            <input name="IDPERIODO" id="IDPERIODO" (change)="saveFormField($event, 'IDPERIODO')" [(ngModel)]="IDPERIODO"
+                fieldName="IDPERIODO" />
         </div>
     </div>
 </div>
