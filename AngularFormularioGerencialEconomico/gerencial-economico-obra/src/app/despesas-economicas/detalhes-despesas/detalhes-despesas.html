@@ -36,8 +36,15 @@
                                 <mat-icon>{{ sortOrder == "ASC" ? "expand_more":"expand_less"}}</mat-icon>
                                 }
                             </div>
-                            
                         </th>
+                        @if(permiteIndireto == true){
+                            <th (click)="changeSorting('indireto')">
+                                Indireto?
+                                @if(columnSort == "indireto"){
+                                    <mat-icon>{{ sortOrder == "ASC" ? "expand_more":"expand_less"}}</mat-icon>
+                                }
+                            </th>
+                        }
                     </tr>
                 </thead>
                 <tbody class="scrollTable">
@@ -46,6 +53,13 @@
                         <td>{{row.descricao}}</td>
                         <td>{{row.data | date:"dd/MM/yyyy"}}</td>
                         <td><b style="color: #dc2626;">{{row.valor | currency:"BRL"}}</b></td>
+
+                        @if(permiteIndireto == true){
+                            <td style="text-align: center;" >
+                                <mat-slide-toggle  [(ngModel)]="row.indireto">
+                                </mat-slide-toggle>
+                            </td>
+                        }
                     </tr>
                     }
                 </tbody>

@@ -1,16 +1,21 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+
 
 @Component({
   selector: 'app-detalhes-despesas',
-  imports: [MatIcon, CurrencyPipe, DatePipe],
+  imports: [MatIcon, CurrencyPipe, DatePipe,FormsModule,MatSlideToggleModule],
   templateUrl: './detalhes-despesas.html',
   styleUrl: './detalhes-despesas.css',
 })
 export class DetalhesDespesas {
   @Input({ required: true }) title!: string;
   @Input({ required: true }) data!: any[];
+  @Input({required:true}) permiteIndireto!:boolean;
+  @Input({required:true}) permiteAlteracao!:boolean;
   @Output() close = new EventEmitter<void>();
 
   columnSort = 'data';

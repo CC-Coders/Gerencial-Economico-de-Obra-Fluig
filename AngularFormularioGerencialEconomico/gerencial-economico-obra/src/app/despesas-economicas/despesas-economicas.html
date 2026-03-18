@@ -5,7 +5,7 @@
                 <mat-icon style="color:#ffcd2a">trending_down</mat-icon>
                 DESPESAS ECONÔMICAS
             </div>
-            <b>Total: {{valorTotal() | currency:"BRL"}}</b>
+            <b>Total: {{despesasEconomicasService.valorTotal() | currency:"BRL"}}</b>
         </h1>
     </div>
     <div>
@@ -15,14 +15,14 @@
                     <h3>
                         <div style="display: flex; justify-content: space-between;">
                             <div>
-                                {{ totalDespesasEconomicas | currency:"BRL"}}
+                                {{ despesasEconomicasService.totalDespesasEconomicas | currency:"BRL"}}
                             </div>
                             <div>
                                 <mat-icon>visibility</mat-icon>
                             </div>
                         </div>
                     </h3>
-                    <small>{{quantidadeDespesas}} Lançamentos</small>
+                    <small>{{despesasEconomicasService.quantidadeDespesas}} Lançamentos</small>
                 </app-card>
             </div>
             <div class="col-md-4">
@@ -30,14 +30,14 @@
                     <h3>
                         <div style="display: flex; justify-content: space-between;">
                             <div>
-                                {{ totalFaturamentoDireto | currency:"BRL"}}
+                                {{ despesasEconomicasService.totalFaturamentoDireto | currency:"BRL"}}
                             </div>
                             <div>
                                 <mat-icon>visibility</mat-icon>
                             </div>
                         </div>
                     </h3>
-                    <small>{{quantidadeFaturamentoDireto}} Lançamentos</small>
+                    <small>{{despesasEconomicasService.quantidadeFaturamentoDireto}} Lançamentos</small>
                 </app-card>
             </div>
             <div class="col-md-4">
@@ -45,14 +45,14 @@
                     <h3>
                         <div style="display: flex; justify-content: space-between;">
                             <div>
-                                {{ totalMateriaisProprios | currency:"BRL"}}
+                                {{ despesasEconomicasService.totalMateriaisProprios | currency:"BRL"}}
                             </div>
                             <div>
                                 <mat-icon>visibility</mat-icon>
                             </div>
                         </div>
                     </h3>
-                    <small>{{quantidadeMateriaisProprios}} Lançamentos</small>
+                    <small>{{despesasEconomicasService.quantidadeMateriaisProprios}} Lançamentos</small>
                 </app-card>
             </div>
             <div class="col-md-4">
@@ -60,14 +60,14 @@
                     <h3>
                         <div style="display: flex; justify-content: space-between;">
                             <div>
-                                {{ totalProvisaoFolha | currency:"BRL"}}
+                                {{ despesasEconomicasService.totalProvisaoFolha | currency:"BRL"}}
                             </div>
                             <div>
                                 <mat-icon>visibility</mat-icon>
                             </div>
                         </div>
                     </h3>
-                    <small>{{quantidadeProvisaoFolha}} Lançamentos</small>
+                    <small>{{despesasEconomicasService.quantidadeProvisaoFolha}} Lançamentos</small>
                 </app-card>
             </div>
             <div class="col-md-4">
@@ -75,31 +75,31 @@
                     <h3>
                         <div style="display: flex; justify-content: space-between;">
                             <div>
-                                {{ totalTransferencias | currency:"BRL"}}
+                                {{ despesasEconomicasService.totalTransferencias | currency:"BRL"}}
                             </div>
                             <div>
                                 <mat-icon>visibility</mat-icon>
                             </div>
                         </div>
                     </h3>
-                    <small>{{quantidadeTransferencias}} Lançamentos</small>
+                    <small>{{despesasEconomicasService.quantidadeTransferencias}} Lançamentos</small>
                 </app-card>
             </div>
         </div>
     </div>
     @if (isDetalhesOpen==true && detalhesOpen == "despesasEconomicas"){
-        <app-detalhes-despesas title="Despesas Econômicas" [data]="despesasEconomicas()" (close)="onCloseDetalhes()"/>
+        <app-detalhes-despesas title="Despesas Econômicas" [permiteAlteracao]="false" [permiteIndireto]="true" [data]="despesasEconomicasService.despesasEconomicas()" (close)="onCloseDetalhes()"/>
     }
     @if (isDetalhesOpen==true && detalhesOpen=="faturamentoDireto"){
-        <app-detalhes-despesas title="Faturamento Direto" [data]="faturamentoDireto()" (close)="onCloseDetalhes()"/>
+        <app-detalhes-despesas title="Faturamento Direto" [permiteAlteracao]="true" [permiteIndireto]="false" [data]="despesasEconomicasService.faturamentoDireto()" (close)="onCloseDetalhes()"/>
     }
     @if (isDetalhesOpen==true && detalhesOpen=="materiaisProprios"){
-        <app-detalhes-despesas title="Materiais Próprios" [data]="materiaisProprios()" (close)="onCloseDetalhes()"/>
+        <app-detalhes-despesas title="Materiais Próprios" [permiteAlteracao]="true" [permiteIndireto]="false" [data]="despesasEconomicasService.materiaisProprios()" (close)="onCloseDetalhes()"/>
     }
     @if (isDetalhesOpen==true && detalhesOpen=="provisaoFolha"){
-        <app-detalhes-despesas title="Provisão de Folha" [data]="provisaoFolha()" (close)="onCloseDetalhes()"/>
+        <app-detalhes-despesas title="Provisão de Folha" [permiteAlteracao]="false" [permiteIndireto]="true" [data]="despesasEconomicasService.provisaoFolha()" (close)="onCloseDetalhes()"/>
     }
     @if (isDetalhesOpen==true && detalhesOpen=="transferencias"){
-        <app-detalhes-despesas title="Transferência de Obras" [data]="transferencias()" (close)="onCloseDetalhes()"/>
+        <app-detalhes-despesas title="Transferência de Obras" [permiteAlteracao]="false" [permiteIndireto]="false" [data]="despesasEconomicasService.transferencias()" (close)="onCloseDetalhes()"/>
     }
 </div>
