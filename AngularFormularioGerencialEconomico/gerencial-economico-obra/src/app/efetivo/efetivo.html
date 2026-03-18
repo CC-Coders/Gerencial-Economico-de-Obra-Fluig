@@ -1,0 +1,62 @@
+<div id="efetivo">
+    <div>
+        <h1 style="display: flex; justify-content: space-between;">
+            <div>
+                <mat-icon style="color:#ffcd2a">groups</mat-icon>
+                EFETIVO
+            </div>
+            <b>Total: {{valorTotal | currency:"BRL"}}</b>
+        </h1>
+    </div>
+    <div>
+
+        @if(efetivo.length==0){
+        <label id="uploadPlanilha" class="upload-custom" for="filePlanilha">
+            <div class="upload-custom-inner">
+                <i class="flaticon flaticon-upload icon-lg" aria-hidden="true"></i>
+                <p>
+                    <span class="upload-link">Clique para carregar ou arraste e solte </span>
+                </p>
+
+                <small>CSV</small>
+
+                <div class="upload-file-name" id="uploadFileName"></div>
+
+                <div class="upload-loader" id="uploadLoader" name="uploadLoader" style="display: none;">
+                    <div class="loader-inline"></div>
+                    <span>Anexando arquivo...</span>
+                </div>
+            </div>
+
+        </label>
+
+        <input type="file" id="filePlanilha" name="filePlanilha" accept=".csv,.xlsx" (change)="loadPlanilha($event)" />
+        }
+
+    </div>
+    @if(efetivo.length>0){
+    <div class="table-container">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>FUNÇÂO</th>
+                    <th>VALOR</th>
+                    <th>INDIRETO?</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(row of efetivo; track row){
+                <tr>
+                    <td>{{row.CARGO}}</td>
+                    <td>{{row.VALOR | currency:"BRL"}}</td>
+                    <td style="text-align: center;">
+                      <mat-slide-toggle [(ngModel)]="row.INDIRETO" [disabled]="true">
+                        </mat-slide-toggle>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+</div>

@@ -1,0 +1,263 @@
+#efetivo{
+    padding: 10px 40px;
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+
+app-card:hover{
+  cursor: pointer;
+}
+app-card:hover mat-icon{
+  color:#ffcd2a;
+} 
+
+div::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+div::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+div::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+div::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.mat-mdc-table .mdc-data-table__header-row {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: white; /* Adjust as needed */
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ffffff;
+}
+
+th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  color: #333;
+}
+
+tr:hover {
+  background-color: #f9f9f9;
+}
+
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  th {
+    display: none;
+  }
+  tr {
+    margin-bottom: 15px;
+  }
+  td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+  td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 50%;
+    padding-left: 15px;
+    white-space: nowrap;
+    font-weight: bold;
+  }
+}
+
+
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  max-height: 500px; /* Set a maximum height to enable vertical scrolling */
+  overflow-y: auto; /* Add scrollbars when content exceeds max-height */
+  overflow-x: auto; /* Optional: for horizontal scrolling */
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: system-ui, sans-serif;
+}
+
+.modern-table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
+  padding: 7px 8px;
+  background: #edf0ff;
+  border-bottom: 2px solid #e6e8ef;
+}
+.modern-table > thead {
+  position: sticky; /* The key property for sticky positioning */
+  top: 0; /* Sticks the header to the top of its scroll container */
+  background-color: #f7f7f7; /* Required to cover content scrolling underneath */
+  z-index: 10; /* Ensures the header stays above the table body rows */
+  /* Add other styling like padding, borders, etc. */
+  padding: 5px;
+  border-bottom: 2px solid #ccc;
+}
+
+.modern-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.modern-table tbody tr:hover {
+  background: #f9fafc;
+}
+
+.modern-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.modern-table tbody tr:nth-child(odd) {
+  background: white;
+}
+
+
+
+
+/* ÁREA DE UPLOAD */
+.upload-custom {
+    margin-top: 10px;
+    border: 2px dashed #e0e0e0;
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    min-height: 180px;
+
+    display: flex;
+    align-items: center;    
+    justify-content: center;
+
+    padding: 24px;
+    transition: all .2s ease;
+    cursor: pointer;
+    width: 100%;
+}
+
+.upload-custom:hover {
+    background-color: #f3f3f3; 
+    border-color: #d5d5d5;       
+}
+
+.upload-custom.drag-over {
+    background-color: #f0faff;
+    border-color: #0099cc;
+}
+
+.upload-custom-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.upload-custom-inner{
+    font-size: 14px;
+}
+
+.flaticon {
+    font-size: 34px;
+    opacity: .95;
+    margin-bottom: 8px;
+}
+
+.upload-link {
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#uploadPlanilha p {
+    margin: 0;
+    color: #555;
+}
+
+#uploadPlanilha small {
+    display: block;
+    margin-top: 4px;
+    color: #999;
+}
+
+#uploadPlanilha {
+    display: flex;
+    align-items: center;   
+    justify-content: center;
+}
+
+.upload-file-name {
+    display: none;          
+    margin-top: 10px;
+    font-size: 13px;
+    color: #555;
+}
+
+#uploadPlanilha.has-file {
+    align-items: flex-start; 
+}
+
+#uploadPlanilha.has-file .upload-file-name {
+    display: block;           
+}
+
+#filePlanilha {
+    position: absolute;
+    left: -9999px;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.upload-loader{
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #555;
+}
+
+.loader-inline{
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #0099cc;
+  border-radius: 50%;
+
+  animation: spin 0.8s linear infinite;
+  box-sizing: border-box;
+}
+
+@keyframes spin{
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
