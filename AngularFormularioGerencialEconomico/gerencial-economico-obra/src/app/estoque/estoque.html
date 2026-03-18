@@ -1,0 +1,79 @@
+<div id="estoque">
+    <div>
+        <h1 style="display: flex; justify-content: space-between;">
+            <div>
+                <mat-icon style="color:#ffcd2a">inventory_2</mat-icon>
+                ESTOQUE
+            </div>
+            <b>Total: {{valorTotal | currency:"BRL"}}</b>
+        </h1>
+    </div>
+    <div>
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>DESCRIÇÃO</th>
+                    <th>FORNECEDOR</th>
+                    <th>UNID.</th>
+                    <th>QNTD</th>
+                    <th>VALOR UN.</th>
+                    <!-- <th>TOTAL</th> -->
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(row of estoqueService.estoque(); track row.ID){
+                <tr>
+                    <td>
+                        {{row.ID}}
+                    </td>
+                    <td style="width: 30%;">
+                        <!-- <input type="text" name="descricao" id="descricao" [(ngModel)]="row.DESCRICAO"
+                            class="form-control"> -->
+                        <ng-select virtualScroll="true" [items]="produtos" bindLabel="DESCRICAO"
+                            [(ngModel)]="row.PRODUTO">
+                        </ng-select>
+                    </td>
+                    <td style="max-width: 300px; width: 30%;">
+                        <ng-select virtualScroll="true" [items]="fornecedores" bindLabel="LABEL"
+                            [(ngModel)]="row.FORNECEDOR">
+                        </ng-select>
+                    </td>
+                    <td>
+                        <input readonly [value]="row.PRODUTO.UN" class="form-control"/>
+                        <!-- <select name="" id="" [(ngModel)]="row.UN" class="form-control">
+                            <option value=""></option>
+                            <option value="M³">M³</option>
+                            <option value="KG">KG</option>
+                        </select> -->
+                    </td>
+                    <td style="width: 10%;">
+                        <input type="text" name="quantidade" id="quantidade" [(ngModel)]="row.QUANTIDADE"
+                            class="form-control" currencyMask
+                            [options]="{ prefix: '', thousands: '.', decimal: ',', nullable:true }">
+                    </td>
+                    <td style="width: 15%;">
+                        <input type="text" name="valor_unitario" id="valor_unitario" [(ngModel)]="row.VALOR_UNITARIO"
+                            class="form-control" currencyMask
+                            [options]="{ prefix: 'R$', thousands: '.', decimal: ',', nullable:true }">
+                    </td>
+                    <!-- <td>
+                        {{(row.QUANTIDADE || 0) * (row.VALOR_UNITARIO || 0) | currency:"BRL" }}
+                    </td> -->
+                    <td>
+                        <mat-icon style="cursor: pointer;" (click)="onDeleteRow(row.ID)">delete</mat-icon>
+                    </td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6" style="text-align: center;">
+                        <button class="btn btn-success" (click)="onAdicionarLinhaEstoque()">Adicionar</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
